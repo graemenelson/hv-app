@@ -1,0 +1,245 @@
+@font-face {
+  font-family: FontAwesome;
+  src: font-url('fontawesome-webfont.ttf') format('truetype');
+}
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.fa-heart:before {
+  content: "\f004";
+}
+.fa-comment:before {
+  content: "\f075";
+}
+
+@font-face {
+  font-family: NeuzeitGrotesk;
+  src: font-url('Neuzeit-Grotesk.otf') format('opentype');
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font: normal normal normal 14px/1 NeuzeitGrotesk;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* from twemoji js */
+img.emoji {
+   height: 1em;
+   width: 1em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+section.page {
+  height: 934px !important;
+  width:  1600px !important;
+  margin: 0;
+  padding: 0;
+  display: block;
+  page-break-after: always;
+  clear: both;
+}
+
+.most-liked {
+  padding: 242px 575px;
+  width: 450px;
+  height: 450px;
+  position: relative;
+}
+
+.most-liked img {
+  width: 450px;
+  height: 450px;
+}
+
+.most-liked .overlay {
+  font-size: 36px;
+  line-height: 36px;
+  height: 370px;
+  width: 370px;
+  top: 282px;
+  left: 615px;
+  position: absolute;
+  z-index: 999;
+  background-color: rgba( 255, 255, 255, 0.80);
+  text-align: center;
+  color: #555;
+}
+
+.most-liked .overlay .days {
+  padding-top: 125px;
+}
+
+.most-liked .overlay .hzSeparator {
+  font-size: 12px;
+  line-height: 14px;
+  padding-bottom: 2px;
+}
+
+.most-liked .overlay .year {
+  font-size: 58px;
+  line-height: 48px;
+}
+
+.most-liked .overlay .year span {
+  padding: 0 21px;
+}
+
+.media {
+  margin: 0;
+  padding: 242px 242px;
+  clear: both;
+}
+
+.media--container {
+  float: left;
+  width: 1096px;
+  height: 450px;
+}
+
+.media--image {
+  width: 450px;
+  height: 450px;
+  float: left;
+}
+
+.media--image img {
+  width: 450px;
+  height: 450px;
+}
+
+.media--content {
+  width: 404px;
+  height: 450px;
+  float: right;
+}
+
+.media--content-container {
+  width: 100%;
+}
+
+.media--content-meta {
+  font-size: 24px;
+  line-height: 36px;
+}
+
+.media--content-meta-identifier {
+  float: left;
+  width: 60%;
+}
+
+.media--content-meta-info {
+  float: right;
+  width: 40%;
+}
+
+.media--content-meta-identifier span {
+  color: white;
+  background: black;
+  font-weight: bold;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 6px;
+  display: block-inline;
+}
+
+.media--content-caption {
+  clear: both;
+  padding-top: 18px;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: justify;
+}
+
+.idx {
+  padding: 65px 200px;
+}
+.idx-column {
+  width: 300px;
+  float: left;
+  height: 804px;
+}
+.idx-gutter {
+  width: 150px;
+  float: left;
+  height: 804px;
+}
+
+.media-cell {
+  padding-bottom: 30px;
+}
+
+.media-cell--image {
+  float: left;
+}
+
+.media-cell--image img {
+  width: 150px;
+  height: 150px;
+}
+
+.media-cell--meta {
+  float: right;
+}
+
+.media-cell--meta {
+  font-size: 14px;
+  line-height: 21px;
+}
+.media-cell--meta .position span {
+  color: white;
+  background: black;
+  font-weight: bold;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 3px;
+  display: block-inline;
+}
+
+.media-cell--caption {
+  clear: both;
+}
+
+.cell {
+  clear: both;
+}
+
+.comment-cell {
+  height: 70px;
+}
+
+.comment-cell--avatar {
+  float: left;
+  width: 55px;
+}
+
+.comment-cell--avatar img {
+  width: 50px;
+  height: 50px;
+}
+
+.comment-cell--text {
+  font-size: 12px;
+  width: 245px;
+  float: right;
+  padding-top: 4px;
+}
