@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: haaave_app_production
-  username: uuids
-  password: <%= ENV['haaave_app_DATABASE_PASSWORD'] %>
+  database: <%= ENV['HAAAVE_APP_DATABASE_NAME'] %>
+  username: <%= ENV['HAAAVE_APP_DATABASE_USERNAME'] %>
+  password: <%= ENV['HAAAVE_APP_DATABASE_PASSWORD'] %>

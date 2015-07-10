@@ -5,6 +5,16 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'pages#landing'
 
+  # only #connect and #callback are exposed for
+  # the instagram resource
+  resource :instagram, only: [], controller: :instagram do
+    member do
+      get 'connect'
+    end
+  end
+  get '/auth/instagram/callback', to: 'instagram#callback'
+
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

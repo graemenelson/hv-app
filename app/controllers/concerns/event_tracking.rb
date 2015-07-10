@@ -2,6 +2,7 @@ module EventTracking
   extend ActiveSupport::Concern
 
   def track!(name, options = {})
+    # TODO: extract customer from visitor, once customer is available
     Event.create(
       action: name,
       visitor: options[:visitor],
