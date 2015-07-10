@@ -1,7 +1,8 @@
 class PagesController < ApplicationController
 
   def landing
-    Rails.logger.warn("   Session: #{session.id}")
+    # what about a/b testing, can we use vanity with the events table?
+    # track! :landing, visitor: current_visitor
   end
 
 end
