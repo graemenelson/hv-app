@@ -5,8 +5,10 @@ class CreateVisitors < ActiveRecord::Migration
       t.text :referrer
       t.text :path
       t.text :user_agent
+      t.hstore :parameters, default: {}, null: false
 
-      t.timestamps null: false
+      t.datetime :created_at, null: false
     end
+    add_index :visitors, :parameters, using: :gin
   end
 end

@@ -11,21 +11,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710193107) do
+ActiveRecord::Schema.define(version: 20150710210109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
   enable_extension "hstore"
 
+  create_table "events", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.uuid     "visitor_id"
+    t.text     "action"
+    t.text     "app_version"
+    t.text     "ip"
+    t.text     "referrer"
+    t.text     "path"
+    t.text     "user_agent"
+    t.hstore   "parameters",  default: {}, null: false
+    t.datetime "created_at",               null: false
+  end
+
+  add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
+  add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
+
   create_table "visitors", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "ip"
     t.text     "referrer"
     t.text     "path"
     t.text     "user_agent"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
     t.hstore   "parameters", default: {}, null: false
+    t.datetime "created_at",              null: false
   end
 
+  add_index "visitors", ["parameters"], name: "index_visitors_on_parameters", using: :gin
+
+  add_foreign_key "events", "visitors"
 end
