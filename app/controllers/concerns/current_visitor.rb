@@ -14,13 +14,15 @@ module CurrentVisitor
   end
 
   def create_visitor
-    Visitor.create(
-      ip: request.ip,
-      path: request.path,
-      user_agent: request.headers['HTTP_USER_AGENT'],
-      referrer: request.referrer,
-      parameters: request.query_parameters
-    )
+    visitor = Visitor.create(
+        ip: request.ip,
+        path: request.path,
+        user_agent: request.headers['HTTP_USER_AGENT'],
+        referrer: request.referrer,
+        parameters: request.query_parameters
+      )
+    session[:visitor_id] = visitor.try(:id)
+    visitor
   end
 
 end
