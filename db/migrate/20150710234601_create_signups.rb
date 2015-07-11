@@ -1,6 +1,6 @@
 class CreateSignups < ActiveRecord::Migration
   def change
-    create_table :signups do |t|
+    create_table :signups, id: :uuid do |t|
       t.text :instagram_id
       t.text :instagram_username
       t.text :email

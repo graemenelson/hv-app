@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20150710234601) do
   add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
   add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
 
-  create_table "signups", force: :cascade do |t|
+  create_table "signups", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "instagram_id"
     t.text     "instagram_username"
     t.text     "email"
