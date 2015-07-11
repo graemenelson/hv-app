@@ -1,14 +1,21 @@
-<%= simple_form_for @signup, url: registration_path(@signup), method: :put do |f| %>
-  <div class='profile'>
-    <div class='profile--picture'><img src="<%= @signup.instagram_profile_picture %>" /></div>
-    <div class='profile--account'>
-      <div class='profile--username'>@<%= @signup.instagram_username %></div>
-
-    </div>
+<h2>You're Almost There</h2>
+<p>Enter your email address and billing information to complete the signup using your instagram account:</p>
+<div class="media">
+  <div class="media-left">
+    <img class="media-object" src="<%= @signup.instagram_profile_picture %>" height="75" width="75" />
   </div>
-  <%= f.input :email, autofocus: true, label: "Email address" %>
+  <div class="media-body">
+    <h4 class="media-heading">@<%= @signup.instagram_username %></h4>
+  </div>
+</div>
+<hr />
+<%= simple_form_for @signup, wrapper: :horizontal_input_group, url: registration_path(@signup), method: :put do |f| %>
+  <fieldset>
+  <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
+  </fieldset>
+
   <%# TODO: added billing information fields %>
   <%# TODO: need to add javascript to record timezone, see haaave-web %>
   <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
-  <%= f.submit "Make the magic happen" %>
+  <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
 <% end %>

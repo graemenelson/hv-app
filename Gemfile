@@ -35,8 +35,7 @@ gem 'puma'
 gem 'instagram'
 
 # Bootstrap
-gem 'bootstrap-sass', '~> 3.3.4'
-gem 'compass'
+gem 'bootstrap-sass', '~> 3.3.5.1'
 
 # Persistence
 gem 'pg'
