@@ -13,4 +13,27 @@ class InstagramControllerTest < ActionController::TestCase
     end
     assert_equal instagram_endpoint, response.location
   end
+
+  test '#callback with no account or signup associated with instagram_id' do
+    code     = '123123123'
+    response = {
+      access_token: 'my-access-token',
+      user: {
+        id: '123',
+        username: 'jimsmith'
+      }
+    }
+    stub_instagram_oauth_access_token(code, response)
+
+    assert_difference "Signup.count" do
+      get :callback, code: code
+    end
+  end
+
+  private
+
+  def stub_instagram_oauth_access_token(code, response)
+    WebMock.stub_request(:post, "https://api.instagram.com/oauth/access_token/")
+           .to_return(body: response.to_json.to_s)
+  end
 end

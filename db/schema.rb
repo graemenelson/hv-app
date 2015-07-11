@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710210109) do
+ActiveRecord::Schema.define(version: 20150710234601) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,17 @@ ActiveRecord::Schema.define(version: 20150710210109) do
 
   add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
   add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
+
+  create_table "signups", force: :cascade do |t|
+    t.text     "instagram_id"
+    t.text     "instagram_username"
+    t.text     "email"
+    t.text     "access_token"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree
 
   create_table "visitors", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "ip"
