@@ -36,10 +36,12 @@ ActiveRecord::Schema.define(version: 20150710234601) do
   create_table "signups", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "instagram_id"
     t.text     "instagram_username"
+    t.text     "instagram_profile_picture"
     t.text     "email"
     t.text     "access_token"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.text     "timezone"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree

@@ -15,13 +15,28 @@ class InstagramController < ApplicationController
     # if we don't have a signup based on instagram id, create one and redirect to register
     # otherwise handle errors
 
-    signup = Signup.create(
-      instagram_id: response.user.id,
-      instagram_username: response.user.username,
-      access_token: response.access_token
-    )
+    signup = create_or_update_signup(response)
+    redirect_to register_path(signup)
+  end
 
-    render json: response
+  private
+
+  def create_or_update_signup(response)
+    if signup = Signup.find_by_instagram_id(response.user.id)
+      signup.update_attributes(
+        instagram_username: response.user.username,
+        access_token: response.access_token,
+        instagram_profile_picture: response.user.profile_picture
+      )
+      signup
+    else
+      Signup.create(
+        instagram_id: response.user.id,
+        instagram_username: response.user.username,
+        access_token: response.access_token,
+        instagram_profile_picture: response.user.profile_picture
+      )
+    end
   end
 
 end

@@ -1,0 +1,14 @@
+<%= simple_form_for @signup, url: registration_path(@signup), method: :put do |f| %>
+  <div class='profile'>
+    <div class='profile--picture'><img src="<%= @signup.instagram_profile_picture %>" /></div>
+    <div class='profile--account'>
+      <div class='profile--username'>@<%= @signup.instagram_username %></div>
+
+    </div>
+  </div>
+  <%= f.input :email, autofocus: true, label: "Email address" %>
+  <%# TODO: added billing information fields %>
+  <%# TODO: need to add javascript to record timezone, see haaave-web %>
+  <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
+  <%= f.submit "Make the magic happen" %>
+<% end %>
