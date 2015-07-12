@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150712140719) do
+ActiveRecord::Schema.define(version: 20150712150138) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,8 +41,10 @@ ActiveRecord::Schema.define(version: 20150712140719) do
     t.text     "user_agent"
     t.hstore   "parameters",  default: {}, null: false
     t.datetime "created_at",               null: false
+    t.uuid     "customer_id"
   end
 
+  add_index "events", ["customer_id"], name: "index_events_on_customer_id", using: :btree
   add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
   add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
 
@@ -65,11 +67,15 @@ ActiveRecord::Schema.define(version: 20150712140719) do
     t.text     "referrer"
     t.text     "path"
     t.text     "user_agent"
-    t.hstore   "parameters", default: {}, null: false
-    t.datetime "created_at",              null: false
+    t.hstore   "parameters",  default: {}, null: false
+    t.datetime "created_at",               null: false
+    t.uuid     "customer_id"
   end
 
+  add_index "visitors", ["customer_id"], name: "index_visitors_on_customer_id", using: :btree
   add_index "visitors", ["parameters"], name: "index_visitors_on_parameters", using: :gin
 
+  add_foreign_key "events", "customers"
   add_foreign_key "events", "visitors"
+  add_foreign_key "visitors", "customers"
 end

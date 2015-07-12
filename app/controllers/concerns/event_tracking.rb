@@ -4,10 +4,12 @@ module EventTracking
   def track!(name, options = {})
     # TODO: extract customer from visitor, once customer is available
     parameters = options[:parameters] || {}
-
+    visitor    = options[:visitor]
+    customer   = visitor.present? ? visitor.customer : nil
     Event.create(
       action: name,
       visitor: options[:visitor],
+      customer: customer,
       ip: request.ip,
       path: request.path,
       referrer: request.referrer,

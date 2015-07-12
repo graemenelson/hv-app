@@ -21,13 +21,4 @@ class SignupTest < ActiveSupport::TestCase
     assert_error(signup, :payment_method_nonce)
   end
 
-
-  private
-
-  def assert_error(signup, key)
-    assert signup.errors[key].present?
-  end
-  def refute_error(signup, key)
-    refute signup.errors[key].present?
-  end
 end

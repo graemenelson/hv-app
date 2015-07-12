@@ -6,27 +6,17 @@ class RegistrationsController < ApplicationController
     generate_braintree_client_token
   end
 
-  def update_signup_with_email_and_billing_info
-    signup_params = params.require(:signup).permit(:email, :payment_method_nonce)
-
-    # if we have a root level :payment_method_nonce,
-    # that means it's from Braintree, so use that value.
-    if params.key?(:payment_method_nonce)
-      signup_params.merge!(payment_method_nonce: params[:payment_method_nonce])
-    end
-
-    @signup.update_attributes(signup_params)
-  end
-
   def update
     load_signup
     update_signup_with_email_and_billing_info
 
     if @signup.captured_email_and_billing_info?
       service = CustomerFromSignup.call(@signup)
-      if service.customer
-        current_customer(service.customer)
+      if customer = service.customer
+        self.current_customer = customer
+        current_visitor.update_attribute(:customer, customer)
         # TODO: send welcome email to customer
+        track_registration! :completed
         redirect_to dashboard_path
       else
         # TODO: log error to help track down payment issues
@@ -40,6 +30,18 @@ class RegistrationsController < ApplicationController
   end
 
   private
+
+  def update_signup_with_email_and_billing_info
+    signup_params = params.require(:signup).permit(:email, :payment_method_nonce)
+
+    # if we have a root level :payment_method_nonce,
+    # that means it's from Braintree, so use that value.
+    if params.key?(:payment_method_nonce)
+      signup_params.merge!(payment_method_nonce: params[:payment_method_nonce])
+    end
+
+    @signup.update_attributes(signup_params)
+  end
 
   def handle_new_with_errors(options = {})
     generate_braintree_client_token if options[:generate_braintree_client_token]

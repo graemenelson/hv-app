@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include CurrentVisitor
+  include CurrentCustomer
   include EventTracking
 
   # TODO: handle record not found, and other exceptions
