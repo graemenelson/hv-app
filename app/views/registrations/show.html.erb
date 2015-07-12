@@ -10,12 +10,16 @@
 </div>
 <hr />
 <%= simple_form_for @signup, wrapper: :horizontal_input_group, url: registration_path(@signup), method: :put do |f| %>
+  <%= f.error :base, class: 'alert alert-danger' %>
   <fieldset>
   <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
   </fieldset>
 
-  <%# TODO: added billing information fields %>
+  <div id='braintree-form-inputs'></div>
+  <%= f.input :payment_method_nonce, as: :hidden %>
   <%# TODO: need to add javascript to record timezone, see haaave-web %>
   <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
   <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
 <% end %>
+
+<script src="https://js.braintreegateway.com/v2/braintree.js"></script>

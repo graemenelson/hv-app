@@ -22,5 +22,13 @@ module HaaaveApp
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    config.eager_load_paths += %W( #{config.root}/app/services #{config.root}/app/validators )
+
+    config.generators do |g|
+      g.test_framework  :test_unit, fixture: false
+      g.stylesheets     false
+      g.javascripts     false
+    end
   end
 end

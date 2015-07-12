@@ -16,7 +16,7 @@ class InstagramController < ApplicationController
     # otherwise handle errors
 
     signup = create_or_update_signup(response)
-    redirect_to register_path(signup)
+    redirect_to registration_path(signup)
   end
 
   private

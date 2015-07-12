@@ -33,6 +33,7 @@ gem 'puma'
 
 # Services
 gem 'instagram'
+gem 'braintree'
 
 # Bootstrap
 gem 'bootstrap-sass', '~> 3.3.5.1'
@@ -42,6 +43,7 @@ gem 'pg'
 
 # Views
 gem 'simple_form'
+gem 'gon'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -57,4 +59,5 @@ end
 
 group :test do
   gem 'webmock'
+  gem 'mocha'
 end

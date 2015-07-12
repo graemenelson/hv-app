@@ -11,12 +11,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710234601) do
+ActiveRecord::Schema.define(version: 20150712140719) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
   enable_extension "hstore"
+
+  create_table "customers", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.text     "access_token"
+    t.text     "braintree_id"
+    t.text     "instagram_id"
+    t.text     "instagram_profile_picture"
+    t.text     "email"
+    t.text     "instagram_username"
+    t.datetime "signup_began_at"
+    t.text     "timezone"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
 
   create_table "events", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.uuid     "visitor_id"
@@ -42,6 +55,7 @@ ActiveRecord::Schema.define(version: 20150710234601) do
     t.text     "timezone"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.text     "payment_method_nonce"
   end
 
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree

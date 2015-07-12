@@ -46,6 +46,8 @@ GEM
     bootstrap-sass (3.3.5.1)
       autoprefixer-rails (>= 5.0.0.1)
       sass (>= 3.3.0)
+    braintree (2.45.0)
+      builder (>= 2.0.0)
     builder (3.2.2)
     byebug (5.0.0)
       columnize (= 0.9.0)
@@ -72,6 +74,11 @@ GEM
       faraday (>= 0.7.4, < 0.10)
     globalid (0.3.5)
       activesupport (>= 4.1.0)
+    gon (5.2.3)
+      actionpack (>= 2.3.0)
+      json
+      multi_json
+      request_store (>= 1.0.5)
     hashie (3.4.2)
     i18n (0.7.0)
     instagram (1.1.5)
@@ -91,9 +98,12 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
+    metaclass (0.0.4)
     mime-types (2.6.1)
     mini_portile (0.6.2)
     minitest (5.7.0)
+    mocha (1.1.0)
+      metaclass (~> 0.0.1)
     multi_json (1.11.2)
     multipart-post (2.0.0)
     nokogiri (1.6.6.2)
@@ -131,6 +141,7 @@ GEM
     rake (10.4.2)
     rdoc (4.2.0)
       json (~> 1.4)
+    request_store (1.1.0)
     safe_yaml (1.0.4)
     sass (3.4.15)
     sass-rails (5.0.3)
@@ -176,12 +187,15 @@ PLATFORMS
 
 DEPENDENCIES
   bootstrap-sass (~> 3.3.5.1)
+  braintree
   byebug
   coffee-rails (~> 4.1.0)
   dotenv-rails
+  gon
   instagram
   jbuilder (~> 2.0)
   jquery-rails
+  mocha
   pg
   puma
   rails (= 4.2.1)

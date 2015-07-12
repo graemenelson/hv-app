@@ -16,47 +16,46 @@ class InstagramControllerTest < ActionController::TestCase
 
   test '#callback with no account or signup associated with instagram_id' do
     code     = '123123123'
-    response = {
-      access_token: 'my-access-token',
-      user: {
-        id: '123',
-        username: 'jimsmith'
-      }
-    }
-    stub_instagram_oauth_access_token(code, response)
+    response = stub_instagram_oauth_access_token(code)
 
     assert_difference "Signup.count" do
       get :callback, code: code
     end
-    assert_redirected_to register_path(Signup.first)
+    assert_redirected_to registration_path(Signup.first)
   end
 
   test '#callback with no account but existing signup associated with instagram_id' do
     code     = '123123123'
     signup   = Signup.create( instagram_id: '123', access_token: 'old-accesstoken', instagram_username: 'old-username')
-    response = {
+    response = stub_instagram_oauth_access_token(code, response)
+
+    assert_no_difference "Signup.count" do
+      get :callback, code: code
+    end
+    assert_redirected_to registration_path(signup)
+
+    signup.reload
+    assert_equal response.access_token, signup.access_token, 'must update access token with new token'
+    assert_equal response.user.username, signup.instagram_username, 'must update username with current username'
+  end
+
+  private
+
+  def stub_instagram_oauth_access_token(code, response = nil)
+    response = Hashie::Mash.new(response || default_instagram_oauth_access_token_response)
+    Instagram.expects(:get_access_token)
+             .with(code, redirect_uri: auth_instagram_callback_url)
+             .returns(response)
+    response
+  end
+
+  def default_instagram_oauth_access_token_response
+    {
       access_token: 'my-access-token',
       user: {
         id: '123',
         username: 'jimsmith'
       }
     }
-    stub_instagram_oauth_access_token(code, response)
-
-    assert_no_difference "Signup.count" do
-      get :callback, code: code
-    end
-    assert_redirected_to register_path(signup)
-
-    signup.reload
-    assert_equal 'my-access-token', signup.access_token, 'must update access token with new token'
-    assert_equal 'jimsmith', signup.instagram_username, 'must update username with current username'
-  end
-
-  private
-
-  def stub_instagram_oauth_access_token(code, response)
-    WebMock.stub_request(:post, "https://api.instagram.com/oauth/access_token/")
-           .to_return(body: response.to_json.to_s)
   end
 end
