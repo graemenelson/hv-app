@@ -44,7 +44,18 @@ class CustomerFromSignup
       @customer = Customer.create!(attributes_for_consumer_from_signup)
       signup.destroy
     else
-      @error    = response.credit_card_verification
+      if response.credit_card_verification
+        @error = response.credit_card_verification
+      else
+        errors = []
+        response.errors.each do |error|
+          errors << "#{error.code} - #{error.message}"
+        end
+        # TODO: we might want to handle certain Braintree errors, like customer id already taken
+        #       -- for now, we are keeping things crude and just blowing up, since we might never hit
+        #          that exception
+        fail "Braintree Error [#{errors.join(', ')}] for Signup (#{signup.id})"
+      end
     end
 
     self

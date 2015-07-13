@@ -76,13 +76,15 @@ class RegistrationsControllerTest < ActionController::TestCase
     # TODO: stub build_dashboard_job.perform (or make sure we have queued a job)
     assert_difference customer_count do
       assert_difference registration_completed_event_count do
-        put :update, id: signup, signup: { email: signup.email }, payment_method_nonce: signup.payment_method_nonce
+        put :update, id: signup, signup: { email: signup.email, timezone: 'Pacific Time (US & Canada)' },
+                                 payment_method_nonce: signup.payment_method_nonce
       end
     end
     customer = Customer.order(created_at: :desc).first
     assert_equal customer, @controller.current_customer, 'should set current customer'
     assert_equal customer, @controller.current_visitor.customer, 'should set customer on current visitor'
     assert_equal customer, Event.where( action: 'registration_completed' ).first.customer
+    assert_equal 'Pacific Time (US & Canada)', customer.timezone
     assert_redirected_to build_dashboard_path
   end
 

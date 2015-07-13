@@ -192,6 +192,7 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   dotenv-rails
   gon
+  hashie (~> 3.4.2)
   instagram
   jbuilder (~> 2.0)
   jquery-rails

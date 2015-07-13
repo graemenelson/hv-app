@@ -8,7 +8,7 @@ class RegistrationsController < ApplicationController
 
   def update
     load_signup
-    update_signup_with_email_and_billing_info
+    update_signup
 
     if @signup.captured_email_and_billing_info?
       service = CustomerFromSignup.call(@signup)
@@ -38,11 +38,11 @@ class RegistrationsController < ApplicationController
   def kickoff_new_customer_jobs(customer)
     # TODO: send welcome email to customer
     #       -- or do we want to send once we have build their initial profile
-    # TODO: kick off 'build dashboard job'    
+    # TODO: kick off 'build dashboard job'
   end
 
-  def update_signup_with_email_and_billing_info
-    signup_params = params.require(:signup).permit(:email, :payment_method_nonce)
+  def update_signup
+    signup_params = params.require(:signup).permit(:email, :payment_method_nonce, :timezone)
 
     # if we have a root level :payment_method_nonce,
     # that means it's from Braintree, so use that value.
