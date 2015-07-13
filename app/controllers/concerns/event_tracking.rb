@@ -2,7 +2,6 @@ module EventTracking
   extend ActiveSupport::Concern
 
   def track!(name, options = {})
-    # TODO: extract customer from visitor, once customer is available
     parameters = options[:parameters] || {}
     visitor    = options[:visitor]
     customer   = visitor.present? ? visitor.customer : nil
