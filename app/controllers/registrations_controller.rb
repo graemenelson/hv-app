@@ -33,7 +33,7 @@ class RegistrationsController < ApplicationController
   def kickoff_new_customer_jobs(customer)
     # TODO: send welcome email to customer
     #       -- or do we want to send once we have build their initial profile
-    # TODO: kick off 'build dashboard job'
+    BuildCustomerProfileJob.perform_later customer
   end
 
   def update_signup

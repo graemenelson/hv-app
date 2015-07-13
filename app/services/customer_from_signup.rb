@@ -1,5 +1,7 @@
 class CustomerFromSignup
 
+  include StrongParametersMixin
+
   attr_reader :signup,
               :customer,
               :error
@@ -67,12 +69,7 @@ class CustomerFromSignup
     signup_attributes   = Hashie::Mash.new(signup.attributes)
     customer_attributes = signup_attributes.slice(*SIGNUP_ATTRIBUTES_TO_MOVE_TO_CUSTOMER)
     customer_attributes.merge!(signup_began_at: signup.created_at, braintree_id: instagram_id)
-
-    # TODO: not really a fan of include ActionController here
-    #       -- if we add other services that create AR records, look at creating
-    #          a base service that wraps this.
-    strong_parameters = ActionController::Parameters.new(customer_attributes)
-    strong_parameters.permit(*PERMITTED_CUSTOMER_ATTRIBUTES)
+    strong_parameters(customer_attributes).permit(*PERMITTED_CUSTOMER_ATTRIBUTES)
   end
 
 end

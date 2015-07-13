@@ -73,11 +73,14 @@ class RegistrationsControllerTest < ActionController::TestCase
         customer: {}
       })
     stub_braintree_customer_create(signup, response)
-    # TODO: stub build_dashboard_job.perform (or make sure we have queued a job)
-    assert_difference customer_count do
-      assert_difference registration_completed_event_count do
-        put :update, id: signup, signup: { email: signup.email, timezone: 'Pacific Time (US & Canada)' },
-                                 payment_method_nonce: signup.payment_method_nonce
+    stub_build_customer_profile_job
+    
+    assert_difference customer_session_count do
+      assert_difference customer_count do
+        assert_difference registration_completed_event_count do
+          put :update, id: signup, signup: { email: signup.email, timezone: 'Pacific Time (US & Canada)' },
+                                   payment_method_nonce: signup.payment_method_nonce
+        end
       end
     end
     customer = Customer.order(created_at: :desc).first
@@ -85,6 +88,11 @@ class RegistrationsControllerTest < ActionController::TestCase
     assert_equal customer, @controller.current_visitor.customer, 'should set customer on current visitor'
     assert_equal customer, Event.where( action: 'registration_completed' ).first.customer
     assert_equal 'Pacific Time (US & Canada)', customer.timezone
+
+    customer_session = CustomerSession.order(created_at: :desc).first
+    assert_equal customer, customer_session.customer
+    assert_equal @controller.current_visitor, customer_session.visitor
+    assert_not_nil customer_session.last_accessed_at
     assert_redirected_to build_dashboard_path
   end
 
@@ -95,12 +103,20 @@ class RegistrationsControllerTest < ActionController::TestCase
     token
   end
 
+  def stub_build_customer_profile_job
+    BuildCustomerProfileJob.expects(:perform_later)
+  end
+
   def registration_new_with_errors_event_count
     -> { Event.where( action: 'registration_new_with_errors' ).count }
   end
 
   def customer_count
     -> { Customer.count }
+  end
+
+  def customer_session_count
+    -> { CustomerSession.count }
   end
 
   def registration_completed_event_count

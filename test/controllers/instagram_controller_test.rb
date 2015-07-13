@@ -44,8 +44,10 @@ class InstagramControllerTest < ActionController::TestCase
     response = stub_instagram_oauth_access_token(code)
     customer = create_customer(instagram_id: response.user.id)
 
-    assert_no_difference "Signup.count" do
-      get :callback, code: code
+    assert_difference "CustomerSession.count" do
+      assert_no_difference "Signup.count" do
+        get :callback, code: code
+      end
     end
     assert_redirected_to dashboard_path
   end
