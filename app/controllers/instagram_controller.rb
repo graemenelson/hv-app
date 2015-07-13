@@ -14,9 +14,14 @@ class InstagramController < ApplicationController
     # if we have a signup based on instagram id, load and redirect to register
     # if we don't have a signup based on instagram id, create one and redirect to register
     # otherwise handle errors
-
-    signup = create_or_update_signup(response)
-    redirect_to registration_path(signup)
+    if customer = Customer.find_by_instagram_id(response.user.id)
+      update_session_with_customer(customer)
+      # TODO: track login -- most likely track on dashboard page
+      redirect_to dashboard_path
+    else
+      signup = create_or_update_signup(response)
+      redirect_to registration_path(signup)
+    end
   end
 
   private

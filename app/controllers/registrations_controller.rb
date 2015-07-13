@@ -30,11 +30,6 @@ class RegistrationsController < ApplicationController
 
   private
 
-  def update_session_with_customer(customer)
-    self.current_customer = customer
-    current_visitor.update_attribute(:customer, customer)
-  end
-
   def kickoff_new_customer_jobs(customer)
     # TODO: send welcome email to customer
     #       -- or do we want to send once we have build their initial profile

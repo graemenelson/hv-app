@@ -5,10 +5,16 @@ module CurrentCustomer
     @current_customer ||= lookup_current_customer
   end
 
+  # :nodoc:
+  # should use update_session_with_customer, to ensure
+  # visitor customer get set
   def current_customer=(customer)
-
-    # TODO: need to ensure we set in current visitor if not set yet
     @current_customer = customer
+  end
+
+  def update_session_with_customer(customer)
+    self.current_customer = customer
+    current_visitor.update_attribute(:customer, customer)
   end
 
 end

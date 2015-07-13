@@ -27,7 +27,7 @@ class InstagramControllerTest < ActionController::TestCase
   test '#callback with no account but existing signup associated with instagram_id' do
     code     = '123123123'
     signup   = Signup.create( instagram_id: '123', access_token: 'old-accesstoken', instagram_username: 'old-username')
-    response = stub_instagram_oauth_access_token(code, response)
+    response = stub_instagram_oauth_access_token(code)
 
     assert_no_difference "Signup.count" do
       get :callback, code: code
@@ -37,6 +37,17 @@ class InstagramControllerTest < ActionController::TestCase
     signup.reload
     assert_equal response.access_token, signup.access_token, 'must update access token with new token'
     assert_equal response.user.username, signup.instagram_username, 'must update username with current username'
+  end
+
+  test '#callback with existing account' do
+    code     = '12312313123'
+    response = stub_instagram_oauth_access_token(code)
+    customer = create_customer(instagram_id: response.user.id)
+
+    assert_no_difference "Signup.count" do
+      get :callback, code: code
+    end
+    assert_redirected_to dashboard_path
   end
 
   private

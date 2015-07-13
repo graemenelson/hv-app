@@ -18,10 +18,21 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
   def create_signup(attrs = {})
-    Signup.create!(attrs.merge({
+    Signup.create!(attrs.reverse_merge({
         access_token: 'access-token',
         instagram_username: 'jillsmith',
         instagram_id: '123456'
+      }))
+  end
+
+  def create_customer(attrs = {})
+    Customer.create!(attrs.reverse_merge({
+        email: 'jill@smith.com',
+        access_token: 'access-token',
+        instagram_username: 'jillsmith',
+        instagram_id: '123456',
+        braintree_id: '123456',
+        timezone: 'Pacific Time (US & Canada)'
       }))
   end
 
