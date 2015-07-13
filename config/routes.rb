@@ -16,7 +16,11 @@ Rails.application.routes.draw do
   get '/auth/instagram/callback', to: 'instagram#callback'
 
   resources :registrations, only: [:show, :update]
-  resource :dashboard, only: [:show]
+  resource :dashboard, only: [:show] do
+    member do
+      get 'build'
+    end
+  end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

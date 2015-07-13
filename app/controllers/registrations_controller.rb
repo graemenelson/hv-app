@@ -13,11 +13,10 @@ class RegistrationsController < ApplicationController
     if @signup.captured_email_and_billing_info?
       service = CustomerFromSignup.call(@signup)
       if customer = service.customer
-        self.current_customer = customer
-        current_visitor.update_attribute(:customer, customer)
-        # TODO: send welcome email to customer
+        update_session_with_customer(customer)
+        kickoff_new_customer_jobs(customer)
         track_registration! :completed
-        redirect_to dashboard_path
+        redirect_to build_dashboard_path
       else
         # TODO: log error to help track down payment issues
         @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.status.titleize}")
@@ -30,6 +29,17 @@ class RegistrationsController < ApplicationController
   end
 
   private
+
+  def update_session_with_customer(customer)
+    self.current_customer = customer
+    current_visitor.update_attribute(:customer, customer)
+  end
+
+  def kickoff_new_customer_jobs(customer)
+    # TODO: send welcome email to customer
+    #       -- or do we want to send once we have build their initial profile
+    # TODO: kick off 'build dashboard job'    
+  end
 
   def update_signup_with_email_and_billing_info
     signup_params = params.require(:signup).permit(:email, :payment_method_nonce)

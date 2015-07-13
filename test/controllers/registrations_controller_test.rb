@@ -73,7 +73,7 @@ class RegistrationsControllerTest < ActionController::TestCase
         customer: {}
       })
     stub_braintree_customer_create(signup, response)
-
+    # TODO: stub build_dashboard_job.perform (or make sure we have queued a job)
     assert_difference customer_count do
       assert_difference registration_completed_event_count do
         put :update, id: signup, signup: { email: signup.email }, payment_method_nonce: signup.payment_method_nonce
@@ -83,7 +83,7 @@ class RegistrationsControllerTest < ActionController::TestCase
     assert_equal customer, @controller.current_customer, 'should set current customer'
     assert_equal customer, @controller.current_visitor.customer, 'should set customer on current visitor'
     assert_equal customer, Event.where( action: 'registration_completed' ).first.customer
-    assert_redirected_to dashboard_path
+    assert_redirected_to build_dashboard_path
   end
 
   private
