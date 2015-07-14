@@ -15,10 +15,4 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
     UpdateInstagramStatsJob.expects(:new).returns(job)
   end
 
-  def stub_retrieve_new_instagram_posts_job(customer)
-    job = mock('retrieve-new-instagram-posts-job')
-    job.expects(:perform).with(customer)
-
-    RetrieveNewInstagramPostsJob.expects(:new).returns(job)
-  end
 end
