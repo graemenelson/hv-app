@@ -14,8 +14,9 @@ class UpdateInstagramStatsJobTest < ActiveJob::TestCase
     assert_equal response.full_name, customer.instagram_full_name
     assert_equal response.username, customer.instagram_username
     assert_equal response.website, customer.website
-    assert_equal response.counts.followed_by, customer.instagram_followed_by
-    assert_equal response.counts.follows, customer.instagram_follows
+    assert_equal response.counts.followed_by, customer.instagram_followed_by_count
+    assert_equal response.counts.follows, customer.instagram_follows_count
+    assert_equal response.counts.media, customer.instagram_media_count
   end
 
   private
@@ -31,7 +32,7 @@ class UpdateInstagramStatsJobTest < ActiveJob::TestCase
   def valid_instagram_response
     @response ||=
       Hashie::Mash.new(
-        counts: { followed_by: 10, follows: 20 },
+        counts: { followed_by: 10, follows: 20, media: 166 },
         profile_picture: 'http://path/to/new/profile.pic',
         full_name: 'Jill Smith New',
         username: 'jillsmithnew',

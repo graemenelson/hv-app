@@ -17,8 +17,9 @@ class UpdateInstagramStatsJob < ActiveJob::Base
       instagram_username: response.username,
       instagram_full_name: response.full_name,
       website: response.website,
-      instagram_follows: response.counts.follows,
-      instagram_followed_by: response.counts.followed_by
+      instagram_follows_count: response.counts.follows,
+      instagram_followed_by_count: response.counts.followed_by,
+      instagram_media_count: response.counts.media
     }
   end
 end

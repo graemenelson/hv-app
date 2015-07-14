@@ -3,8 +3,9 @@ class AddMoreInstagramAttributesToCustomers < ActiveRecord::Migration
     change_table :customers do |t|
       t.text :instagram_full_name
       t.text :website
-      t.integer :instagram_follows
-      t.integer :instagram_followed_by
+      t.integer :instagram_follows_count
+      t.integer :instagram_followed_by_count
+      t.integer :instagram_media_count
     end
   end
 end

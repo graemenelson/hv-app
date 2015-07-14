@@ -35,12 +35,13 @@ ActiveRecord::Schema.define(version: 20150713192807) do
     t.text     "instagram_username"
     t.datetime "signup_began_at"
     t.text     "timezone"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.text     "instagram_full_name"
     t.text     "website"
-    t.integer  "instagram_follows"
-    t.integer  "instagram_followed_by"
+    t.integer  "instagram_follows_count"
+    t.integer  "instagram_followed_by_count"
+    t.integer  "instagram_media_count"
   end
 
   create_table "events", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
