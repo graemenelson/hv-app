@@ -31,14 +31,22 @@ class RegistrationsControllerTest < ActionController::TestCase
   end
   test '#update with valid email' do
     signup = create_signup
-    assert_difference registration_completed_event_count do
-      put :update, id: signup, signup: {email: 'jill@smith.com'}
+    assert_difference customer_count do
+      assert_difference registration_completed_event_count do
+        put :update, id: signup, signup: {email: 'jill@smith.com', timezone: 'America/Los_Angeles'}
+      end
     end
 
+    customer = Customer.first
+    assert_equal 'America/Los_Angeles', customer.timezone
     assert_redirected_to payment_path
   end
 
   private
+
+  def customer_count
+    -> { Customer.count }
+  end
 
   def registration_new_with_errors_event_count
     -> { Event.where( action: 'registration_new_with_errors' ).count }
