@@ -31,7 +31,8 @@ class InstagramController < ApplicationController
       signup.update_attributes(
         instagram_username: response.user.username,
         access_token: response.access_token,
-        instagram_profile_picture: response.user.profile_picture
+        instagram_profile_picture: response.user.profile_picture,
+        allow_blank_email: true
       )
       signup
     else

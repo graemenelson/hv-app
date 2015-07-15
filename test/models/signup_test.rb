@@ -8,17 +8,16 @@ class SignupTest < ActiveSupport::TestCase
     assert_error(signup, :instagram_id)
     assert_error(signup, :instagram_username)
     refute_error(signup, :email)
-    refute_error(signup, :payment_method_nonce)
   end
-  test '#captured_email_and_billing_info? with email and billing info captured' do
-    signup = create_signup({email: 'jill@smith.com', payment_method_nonce: 'nonce'})
-    assert signup.captured_email_and_billing_info?
-  end
-  test '#captured_email_and_billing_info? with missing email and billing info' do
-    signup = create_signup
-    refute signup.captured_email_and_billing_info?
+  test 'update validations' do
+    signup = create_signup(email: nil)
+    refute signup.update_attributes(email: '')
     assert_error(signup, :email)
-    assert_error(signup, :payment_method_nonce)
   end
-
+  test 'update validations with allow_blank_email and no email' do
+    signup = create_signup(email: nil)
+    token  = 'new-access-token'
+    assert signup.update_attributes( access_token: token, allow_blank_email: true )
+    assert_equal token, signup.access_token
+  end
 end

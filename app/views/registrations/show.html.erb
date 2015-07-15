@@ -15,10 +15,6 @@
   <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
   </fieldset>
 
-  <div id='braintree-form-inputs'><%# this is populated by braintree javascript, DO NOT REMOVE %></div>
-  <%= f.input :payment_method_nonce, as: :hidden %>
   <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
   <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
 <% end %>
-
-<script src="https://js.braintreegateway.com/v2/braintree.js"></script>
