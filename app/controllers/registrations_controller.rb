@@ -8,7 +8,9 @@ class RegistrationsController < ApplicationController
   def update
     load_signup
 
-    signup_attrs = params.require(:signup).permit(:email, :timezone)
+    signup_attrs = params.require(:signup)
+                         .permit(:email, :timezone)
+                         .merge( allow_blank_payment_method_nonce: true )
     if @signup.update_attributes(signup_attrs)
       customer = CustomerFromSignup.call(@signup).customer
       update_session_with_customer customer

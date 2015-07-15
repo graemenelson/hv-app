@@ -6,16 +6,24 @@ Rails.application.routes.draw do
   # the instagram resource
   resource :instagram, only: [], controller: :instagram do
     member do
-      get 'connect'
+      get :connect
     end
   end
   get '/auth/instagram/callback', to: 'instagram#callback'
 
+  # TODO: remove registrations resource
   resources :registrations, only: [:show, :update]
+  resources :signups do
+    member do
+      get :information
+      put :update_information
+      get :subscription
+    end
+  end
   resource :payment, only: [:show, :update]
   resource :dashboard, only: [:show] do
     member do
-      get 'build'
+      get :build
     end
   end
 

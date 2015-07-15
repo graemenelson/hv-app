@@ -32,7 +32,8 @@ class InstagramController < ApplicationController
         instagram_username: response.user.username,
         access_token: response.access_token,
         instagram_profile_picture: response.user.profile_picture,
-        allow_blank_email: true
+        allow_blank_email: true,
+        allow_blank_payment_method_nonce: true
       )
       signup
     else
