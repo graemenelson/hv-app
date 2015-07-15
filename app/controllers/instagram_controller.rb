@@ -20,7 +20,7 @@ class InstagramController < ApplicationController
       redirect_to dashboard_path
     else
       signup = create_or_update_signup(response)
-      redirect_to registration_path(signup)
+      redirect_to information_signup_path(signup)
     end
   end
 

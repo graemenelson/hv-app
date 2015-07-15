@@ -9,6 +9,12 @@ class SignupsControllerTest < ActionController::TestCase
     end
     assert_response :ok
     assert_template :information
+
+    assert_select "form[action='#{update_information_signup_path(signup)}']" do
+      assert_select "input[type=hidden][name='signup[timezone]']"
+      assert_select "input[type=email][name='signup[email]']"
+      assert_select "input[type=submit]"
+    end
   end
   test '#information with invalid id must raise RecordNotFound' do
     assert_raise ActiveRecord::RecordNotFound do
@@ -16,14 +22,17 @@ class SignupsControllerTest < ActionController::TestCase
     end
   end
 
-  test '#update_information with valid email' do
+  test '#update_information with valid email and timezone' do
     signup = create_signup_in_information_state
     assert_difference signup_update_information_event_count do
-      put :update_information, id: signup, signup: { email: 'jill@smith.com' }
+      put :update_information, id: signup, signup: { email: 'jill@smith.com', timezone: 'America/Los_Angeles' }
     end
     assert_redirected_to subscription_signup_path(signup)
-  end
 
+    signup.reload
+    assert_equal 'jill@smith.com', signup.email
+    assert_equal 'America/Los_Angeles', signup.timezone
+  end
   test '#update_information with invalid email' do
     signup = create_signup_in_information_state
     assert_difference signup_update_information_with_errors_event_count do
@@ -34,6 +43,84 @@ class SignupsControllerTest < ActionController::TestCase
     assert_error(assigns(:signup), :email)
   end
 
+  test '#subscription with email address/timezone and no payment method nonce' do
+    signup = create_signup_in_subscription_state
+    token  = stub_braintree_client_token
+
+    get :subscription, id: signup
+    assert_response :ok
+    assert_template :subscription
+    assert_equal token, @controller.gon.braintree_client_token
+
+    assert_select "form[action='#{update_subscription_signup_path(signup)}']" do
+      assert_select "div[id=braintree-form-inputs]"
+      assert_select "input[type=submit]"
+    end
+  end
+  test '#subscription with a signup that is not ready for capturing' do
+    signup = create_signup_in_information_state
+    assert_difference signup_not_capturable_event_count do
+      get :subscription, id: signup
+    end
+    assert_redirected_to information_signup_path(signup)
+  end
+
+  test '#update_subscription with a valid payment_method_nonce' do
+    signup = create_signup_in_subscription_state
+
+    response = Hashie::Mash.new({
+        success?: true,
+        customer: {}
+      })
+    stub_braintree_customer_create(signup, response, 'valid-credit-card')
+
+    assert_difference customer_session_count do
+      assert_difference customer_count do
+        assert_difference signup_completed_event_count do
+          put :update_subscription, id: signup, payment_method_nonce: 'valid-credit-card'
+        end
+      end
+    end
+    assert_redirected_to build_dashboard_path
+  end
+  test '#update_subscription with an invalid payment_method_nonce' do
+    signup = create_signup_in_subscription_state
+    token  = stub_braintree_client_token
+
+    response = Hashie::Mash.new({
+        credit_card_verification: {
+          status: 'processor_declined'
+        }
+      })
+    stub_braintree_customer_create(signup, response, 'invalid-credit-card')
+
+    assert_difference signup_update_subscription_with_errors_event_count do
+      put :update_subscription, id: signup, payment_method_nonce: 'invalid-credit-card'
+    end
+    assert_response :ok
+    assert_template :subscription
+    assert_error(assigns[:signup], :base)
+    assert_equal token, @controller.gon.braintree_client_token
+  end
+  test '#update_subscription with a missing payment_method_nonce' do
+    signup = create_signup_in_subscription_state
+    token  = stub_braintree_client_token
+
+    assert_difference signup_update_subscription_with_errors_event_count do
+      put :update_subscription, id: signup, payment_method_nonce: ''
+    end
+    assert_response :ok
+    assert_template :subscription
+    assert_error(assigns(:signup), :payment_method_nonce)
+    assert_equal token, @controller.gon.braintree_client_token
+  end
+  test '#update_subscription with a signup that is not ready for capturing' do
+    signup = create_signup_in_information_state
+    assert_difference signup_not_capturable_event_count do
+      put :update_subscription, id: signup, payment_method_nonce: 'nonce'
+    end
+    assert_redirected_to information_signup_path(signup)
+  end
 
   private
 
@@ -49,7 +136,36 @@ class SignupsControllerTest < ActionController::TestCase
     -> { Event.where( action: 'signup_update_information_with_errors').count }
   end
 
+  def signup_update_subscription_with_errors_event_count
+    -> { Event.where( action: 'signup_update_subscription_with_errors').count }
+  end
+
+  def signup_not_capturable_event_count
+    -> { Event.where( action: 'signup_not_capturable' ).count }
+  end
+
+  def signup_completed_event_count
+    -> { Event.where( action: 'signup_completed').count }
+  end
+
+  def customer_session_count
+    -> { CustomerSession.count }
+  end
+
+  def customer_count
+    -> { Customer.count }
+  end
+
   def create_signup_in_information_state
-    create_signup(email: nil, payment_method_nonce: nil)
+    create_signup(email: nil, payment_method_nonce: nil, timezone: nil)
+  end
+
+  def create_signup_in_subscription_state
+    create_signup(email: 'jill@smith.com', timezone: 'America/Los_Angeles', payment_method_nonce: nil)
+  end
+
+  def stub_braintree_client_token(token = '123123')
+    Braintree::ClientToken.expects(:generate).returns(token)
+    token
   end
 end

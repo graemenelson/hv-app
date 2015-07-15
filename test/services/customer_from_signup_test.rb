@@ -1,10 +1,30 @@
 require 'test_helper'
 
 class CustomerFromSignupTest < ActiveSupport::TestCase
-  test '#call when customer is created' do
+  test '#call when credit card validation fails on customer creation' do
+    signup = create_signup
+    response = Hashie::Mash.new({
+        credit_card_verification: {
+          status: 'processor_declined'
+        }
+      })
+
+    stub_braintree_customer_create(signup, response)
+
+    service = CustomerFromSignup.call(signup)
+    refute service.customer.present?
+    assert_equal response.credit_card_verification, service.error
+  end
+  test '#call when braintree customer creation is successful' do
     signup   = create_signup(email: 'jill@smith.com',
                              timezone: 'Pacific Time (US & Canada)',
                              instagram_profile_picture: 'http://path/to/profile-picture.png')
+    response = Hashie::Mash.new({
+        success?: true,
+        customer: {}
+      })
+
+    stub_braintree_customer_create(signup, response)
 
     customer = CustomerFromSignup.call(signup).customer
     assert customer
@@ -13,10 +33,11 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     assert_equal signup.instagram_username, customer.instagram_username
     assert_equal signup.email, customer.email
     assert_equal signup.created_at, customer.signup_began_at
+    assert_equal signup.instagram_id, customer.braintree_id
     assert_equal signup.instagram_profile_picture, customer.instagram_profile_picture
     assert_equal signup.timezone, customer.timezone
 
     assert signup.destroyed?
   end
-  
+
 end

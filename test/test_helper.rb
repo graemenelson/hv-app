@@ -43,16 +43,16 @@ class ActiveSupport::TestCase
     refute signup.errors[key].present?
   end
 
-  def stub_braintree_customer_create(signup, response)
+  def stub_braintree_customer_create(signup, response, payment_method_nonce = nil)
     Braintree::Customer.expects(:create)
-                       .with(expected_attributes_to_braintree_customer_create(signup))
+                       .with(expected_attributes_to_braintree_customer_create(signup, payment_method_nonce))
                        .returns(response)
   end
 
-  def expected_attributes_to_braintree_customer_create(signup)
+  def expected_attributes_to_braintree_customer_create(signup, payment_method_nonce = nil)
     {
       id: signup.instagram_id,
-      payment_method_nonce: signup.payment_method_nonce,
+      payment_method_nonce: payment_method_nonce || signup.payment_method_nonce,
       email: signup.email,
       website: "http://instagram.com/#{signup.instagram_username}"
     }

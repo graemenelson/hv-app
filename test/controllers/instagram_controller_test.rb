@@ -21,7 +21,7 @@ class InstagramControllerTest < ActionController::TestCase
     assert_difference "Signup.count" do
       get :callback, code: code
     end
-    assert_redirected_to registration_path(Signup.first)
+    assert_redirected_to information_signup_path(Signup.first)
   end
 
   test '#callback with no account but existing signup associated with instagram_id' do
@@ -32,7 +32,7 @@ class InstagramControllerTest < ActionController::TestCase
     assert_no_difference "Signup.count" do
       get :callback, code: code
     end
-    assert_redirected_to registration_path(signup)
+    assert_redirected_to information_signup_path(signup)
 
     signup.reload
     assert_equal response.access_token, signup.access_token, 'must update access token with new token'

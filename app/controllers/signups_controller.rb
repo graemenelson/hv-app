@@ -8,7 +8,7 @@ class SignupsController < ApplicationController
     load_signup
 
     update_attrs = params.require(:signup)
-                         .permit(:email)
+                         .permit(:email, :timezone)
                          .merge( allow_blank_payment_method_nonce: true )
 
     if @signup.update_attributes(update_attrs)
@@ -19,10 +19,81 @@ class SignupsController < ApplicationController
       render :information
     end
   end
+
+  def subscription
+    load_signup
+
+    # collect information before capturing the
+    # subscription.
+    if can_capture_subscription?(@signup)
+      generate_braintree_client_token
+    else
+      unable_to_capture_subscription!
+    end
+  end
+
+  def update_subscription
+    load_signup
+
+    if can_capture_subscription?(@signup)
+      signup_attrs = params.permit(:payment_method_nonce)
+      if @signup.update_attributes(signup_attrs)
+        service = CustomerFromSignup.call(@signup)
+        if customer = service.customer
+          # TODO: need to create subscription default, $18 for 6 months
+          #       -- keep in mind we might need to handle different plans later on
+          update_session_with_customer(customer)
+          track_signup! :completed
+          redirect_to build_dashboard_path
+        else
+          @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.status.titleize}")
+          unable_to_update_subscription!
+        end
+
+        # transaction = Braintree::Transaction.sale( {
+        #   amount: '18.00',
+        #   payment_method_nonce: @signup.payment_method_nonce,
+        #   options: {
+        #     submit_for_settlement: true,
+        #     store_in_vault_on_success: true
+        #   },
+        #   customer: {
+        #     id: @signup.instagram_id,
+        #     email: @signup.email,
+        #     website: "https://instagram.com/#{@signup.instagram_username}"
+        #   }
+        # })
+        # response = Braintree::Customer.create({
+        #     id: @signup.instagram_id,
+        #     payment_method_nonce: @signup.payment_method_nonce,
+        #     email: @signup.email,
+        #     website: "http://instagram.com/#{@signup.instagram_username}"
+        #   })
+        #
+        # puts response.inspect
+        # try and capture Braintree::Transaction
+      else
+        unable_to_update_subscription!
+      end
+    else
+      unable_to_capture_subscription!
+    end
+  end
+
   private
 
   def load_signup
     @signup = Signup.find(params[:id])
+  end
+
+  def unable_to_update_subscription!
+    generate_braintree_client_token
+    track_signup! :update_subscription_with_errors
+    render :subscription
+  end
+
+  def can_capture_subscription?(signup)
+    signup.email.present?
   end
 
   def track_signup!(name)
@@ -33,6 +104,15 @@ class SignupsController < ApplicationController
                    instagram_id:       @signup.instagram_id,
                    errors:             @signup.errors.full_messages.join(", ")
                  }
+  end
+
+  def generate_braintree_client_token
+    gon.braintree_client_token = Braintree::ClientToken.generate
+  end
+
+  def unable_to_capture_subscription!
+    track_signup! :not_capturable
+    redirect_to information_signup_path(@signup)
   end
 
 end

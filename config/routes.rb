@@ -11,13 +11,12 @@ Rails.application.routes.draw do
   end
   get '/auth/instagram/callback', to: 'instagram#callback'
 
-  # TODO: remove registrations resource
-  resources :registrations, only: [:show, :update]
   resources :signups do
     member do
       get :information
       put :update_information
       get :subscription
+      put :update_subscription
     end
   end
   resource :payment, only: [:show, :update]
