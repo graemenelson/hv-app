@@ -60,7 +60,6 @@ class SignupsControllerTest < ActionController::TestCase
 
     assert_select "form[action='#{update_subscription_signup_path(signup)}']" do
       assert_select "div[id=braintree-form-inputs]"
-      assert_select "input[name='signup[terms_of_service]'][type=checkbox]"
       assert_select "input[name='signup[payment_method_nonce]'][type=hidden]"
       assert_select "input[name='signup[payment_method_type]'][type=hidden]"
       assert_select "input[type=submit]"
@@ -94,7 +93,6 @@ class SignupsControllerTest < ActionController::TestCase
         assert_difference signup_completed_event_count do
           put :update_subscription, id: signup,
                                     signup: {
-                                      terms_of_service: '1',
                                       payment_method_nonce: 'valid-credit-card',
                                       payment_method_type: 'CreditCard' }
         end
@@ -120,7 +118,7 @@ class SignupsControllerTest < ActionController::TestCase
 
     assert_difference signup_update_subscription_with_errors_event_count do
       put :update_subscription, id: signup,
-                                signup: {payment_method_nonce: 'invalid-credit-card', terms_of_service: '1'}
+                                signup: {payment_method_nonce: 'invalid-credit-card'}
     end
     assert_response :ok
     assert_template :subscription
@@ -133,32 +131,18 @@ class SignupsControllerTest < ActionController::TestCase
 
     assert_difference signup_update_subscription_with_errors_event_count do
       put :update_subscription, id: signup,
-                                signup: {payment_method_nonce: '', terms_of_service: '1'}
+                                signup: {payment_method_nonce: ''}
     end
     assert_response :ok
     assert_template :subscription
     assert_error(assigns(:signup), :payment_method_nonce)
     assert_equal token, @controller.gon.braintree_client_token
   end
-  test '#update_subscription with where terms are not accepted' do
-    signup = create_signup_in_subscription_state
-    token  = stub_braintree_client_token
-
-    assert_difference signup_update_subscription_with_errors_event_count do
-      put :update_subscription, id: signup,
-                                signup: {payment_method_nonce: 'valid-credit-card', terms_of_service: ''}
-    end
-
-    assert_response :ok
-    assert_template :subscription
-    assert_error(assigns(:signup), :terms_of_service)
-    assert_equal token, @controller.gon.braintree_client_token
-  end
   test '#update_subscription with a signup that is not ready for capturing' do
     signup = create_signup_in_information_state
     assert_difference signup_not_capturable_event_count do
       put :update_subscription, id: signup,
-                                signup: {payment_method_nonce: 'nonce', terms_of_service: "1"}
+                                signup: {payment_method_nonce: 'nonce'}
     end
     assert_redirected_to information_signup_path(signup)
   end

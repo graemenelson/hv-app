@@ -38,8 +38,7 @@ class SignupsController < ApplicationController
     if can_capture_subscription?(@signup)
       signup_attrs = params.require(:signup)
                            .permit(:payment_method_nonce,
-                                   :payment_method_type,
-                                   :terms_of_service)
+                                   :payment_method_type)
 
       if @signup.update_attributes(signup_attrs)
         service = CustomerFromSignup.call(@signup)

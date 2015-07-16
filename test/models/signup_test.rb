@@ -15,7 +15,7 @@ class SignupTest < ActiveSupport::TestCase
     assert_error(signup, :email)
   end
   test 'update validations with allow_blank_email and no email' do
-    signup = create_signup(email: nil, payment_method_nonce: 'my-nonce', terms_of_service: '1')
+    signup = create_signup(email: nil, payment_method_nonce: 'my-nonce')
     token  = 'new-access-token'
     assert signup.update_attributes( access_token: token, allow_blank_email: true )
     assert_equal token, signup.access_token
@@ -25,16 +25,6 @@ class SignupTest < ActiveSupport::TestCase
     token  = 'new-access-token'
     assert signup.update_attributes( access_token: token, allow_blank_payment_method_nonce: true )
     assert_equal token, signup.access_token
-  end
-  test 'update_validations where terms_of_service are accepted' do
-    signup = create_signup
-    valid_update_attrs = { email: 'jill@smith.com', payment_method_nonce: 'payment' }
-    assert signup.update_attributes(valid_update_attrs.merge(terms_of_service: "1"))
-  end
-  test 'update_validations where terms_of_service are not accepted' do
-    signup = create_signup
-    valid_update_attrs = { email: 'jill@smith.com', payment_method_nonce: 'payment' }
-    refute signup.update_attributes(valid_update_attrs.merge(terms_of_service: ""))
   end
 
   test 'completed! when not already completed' do

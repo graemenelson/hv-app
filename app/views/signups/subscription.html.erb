@@ -1,7 +1,6 @@
 <%= simple_form_for @signup, url: update_subscription_signup_path(@signup), method: :put do |f| %>
   <%= f.error :base, class: 'alert alert-danger' %>
   <div id='braintree-form-inputs'><%# this is populated by braintree javascript, DO NOT REMOVE %></div>
-  <%= f.input :terms_of_service, as: :boolean, label: " I agree with the terms of service" %>
   <%= f.input :payment_method_nonce, as: :hidden %>
   <%= f.input :payment_method_type, as: :hidden %>
   <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
