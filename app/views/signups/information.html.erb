@@ -9,7 +9,7 @@
   </div>
 </div>
 <hr />
-<%= simple_form_for @signup, wrapper: :horizontal_input_group, url: update_information_signup_path(@signup), method: :put do |f| %>
+<%= simple_form_for @signup, url: update_information_signup_path(@signup), method: :put do |f| %>
   <%= f.error :base, class: 'alert alert-danger' %>
   <fieldset>
   <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
