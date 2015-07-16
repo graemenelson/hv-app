@@ -57,7 +57,13 @@ class SignupsControllerTest < ActionController::TestCase
     assert_response :ok
     assert_template :subscription
     assert_equal token, @controller.gon.braintree_client_token
+    assert assigns(:plan), 'should assign plan'
 
+    assert_select "#plan" do
+      assert_select "h2", "$18"
+      assert_select "p", "6 month subscription"
+      assert_select "p", "$18 billed every 6 months"
+    end
     assert_select "form[action='#{update_subscription_signup_path(signup)}']" do
       assert_select "div[id=braintree-form-inputs]"
       assert_select "input[name='signup[payment_method_nonce]'][type=hidden]"

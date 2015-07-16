@@ -27,6 +27,7 @@ class SignupsController < ApplicationController
     # subscription.
     if can_capture_subscription?(@signup)
       generate_braintree_client_token
+      load_default_plan
     else
       unable_to_capture_subscription!
     end
@@ -91,8 +92,13 @@ class SignupsController < ApplicationController
                     .first!
   end
 
+  def load_default_plan
+    @plan = Plan.default
+  end
+
   def unable_to_update_subscription!
     generate_braintree_client_token
+    load_default_plan
     track_signup! :update_subscription_with_errors
     render :subscription
   end

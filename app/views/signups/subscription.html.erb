@@ -1,3 +1,9 @@
+<div id='plan'>
+  <h2>$<%= @plan.amount %></h2>
+  <p><%= @plan.duration %> month subscription</p>
+  <p>$<%= @plan.amount %> billed every <%= @plan.duration %> months</p>
+</div>
+
 <%= simple_form_for @signup, url: update_subscription_signup_path(@signup), method: :put do |f| %>
   <%= f.error :base, class: 'alert alert-danger' %>
   <div id='braintree-form-inputs'><%# this is populated by braintree javascript, DO NOT REMOVE %></div>

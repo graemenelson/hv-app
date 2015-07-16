@@ -19,10 +19,14 @@ class Plan < ActiveRecord::Base
   def self.default
     plan = find_by_slug('six-month-plan')
     return plan if plan
-    
+
     Plan.create! name: '$18 for 6 months',
                  slug: 'six-month-plan',
                  duration: 6,
                  amount_cents: 1800
+  end
+
+  def amount
+    @amount = amount_cents / 100
   end
 end
