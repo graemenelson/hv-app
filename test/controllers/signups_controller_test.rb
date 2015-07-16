@@ -21,6 +21,12 @@ class SignupsControllerTest < ActionController::TestCase
       get :information, id: 'blah'
     end
   end
+  test '#information with completed signup' do
+    signup = create_signup(completed_at: 3.days.ago)
+    assert_raise ActiveRecord::RecordNotFound do
+      get :information, id: signup
+    end
+  end
 
   test '#update_information with valid email and timezone' do
     signup = create_signup_in_information_state
@@ -54,7 +60,16 @@ class SignupsControllerTest < ActionController::TestCase
 
     assert_select "form[action='#{update_subscription_signup_path(signup)}']" do
       assert_select "div[id=braintree-form-inputs]"
+      assert_select "input[name='signup[terms_of_service]'][type=checkbox]"
+      assert_select "input[name='signup[payment_method_nonce]'][type=hidden]"
+      assert_select "input[name='signup[payment_method_type]'][type=hidden]"
       assert_select "input[type=submit]"
+    end
+  end
+  test '#subscription with completed signup' do
+    signup = create_signup(completed_at: 3.days.ago)
+    assert_raise ActiveRecord::RecordNotFound do
+      get :subscription, id: signup
     end
   end
   test '#subscription with a signup that is not ready for capturing' do
@@ -77,10 +92,19 @@ class SignupsControllerTest < ActionController::TestCase
     assert_difference customer_session_count do
       assert_difference customer_count do
         assert_difference signup_completed_event_count do
-          put :update_subscription, id: signup, payment_method_nonce: 'valid-credit-card'
+          put :update_subscription, id: signup,
+                                    signup: {
+                                      terms_of_service: '1',
+                                      payment_method_nonce: 'valid-credit-card',
+                                      payment_method_type: 'CreditCard' }
         end
       end
     end
+
+    signup.reload
+    assert signup.completed?
+    assert_equal 'CreditCard', signup.payment_method_type
+    assert_equal 'valid-credit-card', signup.payment_method_nonce
     assert_redirected_to build_dashboard_path
   end
   test '#update_subscription with an invalid payment_method_nonce' do
@@ -95,7 +119,8 @@ class SignupsControllerTest < ActionController::TestCase
     stub_braintree_customer_create(signup, response, 'invalid-credit-card')
 
     assert_difference signup_update_subscription_with_errors_event_count do
-      put :update_subscription, id: signup, payment_method_nonce: 'invalid-credit-card'
+      put :update_subscription, id: signup,
+                                signup: {payment_method_nonce: 'invalid-credit-card', terms_of_service: '1'}
     end
     assert_response :ok
     assert_template :subscription
@@ -107,17 +132,33 @@ class SignupsControllerTest < ActionController::TestCase
     token  = stub_braintree_client_token
 
     assert_difference signup_update_subscription_with_errors_event_count do
-      put :update_subscription, id: signup, payment_method_nonce: ''
+      put :update_subscription, id: signup,
+                                signup: {payment_method_nonce: '', terms_of_service: '1'}
     end
     assert_response :ok
     assert_template :subscription
     assert_error(assigns(:signup), :payment_method_nonce)
     assert_equal token, @controller.gon.braintree_client_token
   end
+  test '#update_subscription with where terms are not accepted' do
+    signup = create_signup_in_subscription_state
+    token  = stub_braintree_client_token
+
+    assert_difference signup_update_subscription_with_errors_event_count do
+      put :update_subscription, id: signup,
+                                signup: {payment_method_nonce: 'valid-credit-card', terms_of_service: ''}
+    end
+
+    assert_response :ok
+    assert_template :subscription
+    assert_error(assigns(:signup), :terms_of_service)
+    assert_equal token, @controller.gon.braintree_client_token
+  end
   test '#update_subscription with a signup that is not ready for capturing' do
     signup = create_signup_in_information_state
     assert_difference signup_not_capturable_event_count do
-      put :update_subscription, id: signup, payment_method_nonce: 'nonce'
+      put :update_subscription, id: signup,
+                                signup: {payment_method_nonce: 'nonce', terms_of_service: "1"}
     end
     assert_redirected_to information_signup_path(signup)
   end

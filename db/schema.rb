@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150713192807) do
+ActiveRecord::Schema.define(version: 20150716184904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,7 +42,10 @@ ActiveRecord::Schema.define(version: 20150713192807) do
     t.integer  "instagram_follows_count"
     t.integer  "instagram_followed_by_count"
     t.integer  "instagram_media_count"
+    t.uuid     "signup_id"
   end
+
+  add_index "customers", ["signup_id"], name: "index_customers_on_signup_id", using: :btree
 
   create_table "events", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.uuid     "visitor_id"
@@ -61,6 +64,17 @@ ActiveRecord::Schema.define(version: 20150713192807) do
   add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
   add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
 
+  create_table "plans", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.text     "name"
+    t.text     "slug"
+    t.integer  "duration"
+    t.integer  "amount_cents"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "plans", ["slug"], name: "index_plans_on_slug", unique: true, using: :btree
+
   create_table "signups", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "instagram_id"
     t.text     "instagram_username"
@@ -71,6 +85,8 @@ ActiveRecord::Schema.define(version: 20150713192807) do
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
     t.text     "payment_method_nonce"
+    t.text     "payment_method_type"
+    t.datetime "completed_at"
   end
 
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree

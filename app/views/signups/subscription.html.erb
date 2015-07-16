@@ -1,9 +1,10 @@
-<%= form_tag update_subscription_signup_path(@signup), method: :put do %>
-  <% if @signup.errors[:base].present? %>
-    <div class="alert alert-danger"><%= @signup.errors[:base].join(" and ") %></div>
-  <% end %>
+<%= simple_form_for @signup, wrapper: :horizontal_input_group, url: update_subscription_signup_path(@signup), method: :put do |f| %>
+  <%= f.error :base, class: 'alert alert-danger' %>
   <div id='braintree-form-inputs'><%# this is populated by braintree javascript, DO NOT REMOVE %></div>
-  <%= submit_tag "Make the magic happen", class: 'btn btn-primary' %>
+  <%= f.input :terms_of_service, as: :boolean, label: " I agree with the terms of service" %>
+  <%= f.input :payment_method_nonce, as: :hidden %>
+  <%= f.input :payment_method_type, as: :hidden %>
+  <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
 <% end %>
 
 <script src="https://js.braintreegateway.com/v2/braintree.js"></script>

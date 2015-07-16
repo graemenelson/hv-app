@@ -43,8 +43,8 @@ class CustomerFromSignup
       })
 
     if response.success?
-      @customer = Customer.create!(attributes_for_consumer_from_signup)
-      signup.destroy
+      @customer = Customer.create!(attributes_for_consumer_from_signup.merge(signup: signup))
+      signup.completed!
     else
       if response.credit_card_verification
         @error = response.credit_card_verification

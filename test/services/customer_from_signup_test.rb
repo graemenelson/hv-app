@@ -36,8 +36,9 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     assert_equal signup.instagram_id, customer.braintree_id
     assert_equal signup.instagram_profile_picture, customer.instagram_profile_picture
     assert_equal signup.timezone, customer.timezone
+    assert_equal signup, customer.signup
 
-    assert signup.destroyed?
+    assert signup.completed?
   end
 
 end

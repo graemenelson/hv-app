@@ -36,11 +36,20 @@ class ActiveSupport::TestCase
       }))
   end
 
-  def assert_error(signup, key)
-    assert signup.errors[key].present?
+  def create_plan(attrs = {})
+    Plan.create!(attrs.reverse_merge({
+        name: "$18 for 6 months",
+        slug: 'six-month-plan',
+        duration: 6,
+        amount_cents: 1800
+      }))
   end
-  def refute_error(signup, key)
-    refute signup.errors[key].present?
+
+  def assert_error(signup, key, message = nil)
+    assert signup.errors[key].present?, message || "expected error on '#{key}'"
+  end
+  def refute_error(signup, key, message = nil)
+    refute signup.errors[key].present?, message || "unexpected error on '#{key}'"
   end
 
   def stub_braintree_customer_create(signup, response, payment_method_nonce = nil)

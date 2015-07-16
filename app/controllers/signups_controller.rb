@@ -1,11 +1,11 @@
 class SignupsController < ApplicationController
   def information
-    load_signup
+    load_active_signup
     track_signup! :information
   end
 
   def update_information
-    load_signup
+    load_active_signup
 
     update_attrs = params.require(:signup)
                          .permit(:email, :timezone)
@@ -21,7 +21,7 @@ class SignupsController < ApplicationController
   end
 
   def subscription
-    load_signup
+    load_active_signup
 
     # collect information before capturing the
     # subscription.
@@ -33,10 +33,14 @@ class SignupsController < ApplicationController
   end
 
   def update_subscription
-    load_signup
+    load_active_signup
 
     if can_capture_subscription?(@signup)
-      signup_attrs = params.permit(:payment_method_nonce)
+      signup_attrs = params.require(:signup)
+                           .permit(:payment_method_nonce,
+                                   :payment_method_type,
+                                   :terms_of_service)
+
       if @signup.update_attributes(signup_attrs)
         service = CustomerFromSignup.call(@signup)
         if customer = service.customer
@@ -82,8 +86,10 @@ class SignupsController < ApplicationController
 
   private
 
-  def load_signup
-    @signup = Signup.find(params[:id])
+  def load_active_signup
+    query   = {id: params[:id], completed_at: nil}
+    @signup = Signup.where(query)
+                    .first!
   end
 
   def unable_to_update_subscription!
