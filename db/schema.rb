@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150716184904) do
+ActiveRecord::Schema.define(version: 20150717152227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,9 +87,23 @@ ActiveRecord::Schema.define(version: 20150716184904) do
     t.text     "payment_method_nonce"
     t.text     "payment_method_type"
     t.datetime "completed_at"
+    t.uuid     "plan_id"
   end
 
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree
+  add_index "signups", ["plan_id"], name: "index_signups_on_plan_id", using: :btree
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.uuid     "customer_id"
+    t.uuid     "plan_id"
+    t.text     "transaction_id"
+    t.datetime "ends_at"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "subscriptions", ["customer_id"], name: "index_subscriptions_on_customer_id", using: :btree
+  add_index "subscriptions", ["plan_id"], name: "index_subscriptions_on_plan_id", using: :btree
 
   create_table "visitors", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "ip"
@@ -106,5 +120,7 @@ ActiveRecord::Schema.define(version: 20150716184904) do
 
   add_foreign_key "events", "customers"
   add_foreign_key "events", "visitors"
+  add_foreign_key "subscriptions", "customers"
+  add_foreign_key "subscriptions", "plans"
   add_foreign_key "visitors", "customers"
 end

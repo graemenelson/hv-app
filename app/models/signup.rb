@@ -5,6 +5,8 @@ class Signup < ActiveRecord::Base
   attr_accessor :allow_blank_email,
                 :allow_blank_payment_method_nonce
 
+  belongs_to :plan
+
   validates :access_token,
             :instagram_id,
             :instagram_username,

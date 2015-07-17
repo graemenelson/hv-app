@@ -1,30 +1,33 @@
 require 'test_helper'
 
 class CustomerFromSignupTest < ActiveSupport::TestCase
-  test '#call when credit card validation fails on customer creation' do
-    signup = create_signup
+  test '#call when BT transaction fails on customer creation' do
+    signup = create_signup_with_plan
     response = Hashie::Mash.new({
-        credit_card_verification: {
+        success?: false,
+        transaction: {
           status: 'processor_declined'
         }
       })
 
-    stub_braintree_customer_create(signup, response)
+    stub_braintree_transaction_sale(signup, response)
 
     service = CustomerFromSignup.call(signup)
     refute service.customer.present?
-    assert_equal response.credit_card_verification, service.error
+    assert_equal response.transaction.status, service.error
   end
   test '#call when braintree customer creation is successful' do
-    signup   = create_signup(email: 'jill@smith.com',
+    signup   = create_signup_with_plan(email: 'jill@smith.com',
                              timezone: 'Pacific Time (US & Canada)',
                              instagram_profile_picture: 'http://path/to/profile-picture.png')
     response = Hashie::Mash.new({
         success?: true,
-        customer: {}
+        transaction: {
+          id: 'transaction-id'
+        }
       })
 
-    stub_braintree_customer_create(signup, response)
+    stub_braintree_transaction_sale(signup, response)
 
     customer = CustomerFromSignup.call(signup).customer
     assert customer
@@ -38,7 +41,22 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     assert_equal signup.timezone, customer.timezone
     assert_equal signup, customer.signup
 
-    assert signup.completed?
+    subscription = customer.subscriptions.first
+    assert_equal 'transaction-id', subscription.transaction_id
+    assert_equal signup.plan, subscription.plan
+
+    with_timezone(customer.timezone) do
+      expected_ends_at = 6.months.from_now.beginning_of_month
+      assert_equal expected_ends_at, subscription.ends_at
+    end
+
+    assert signup.completed?, "signup should now be completed"
+  end
+
+  private
+
+  def create_signup_with_plan(attrs = {})
+    create_signup(attrs.merge(plan: Plan.default))
   end
 
 end

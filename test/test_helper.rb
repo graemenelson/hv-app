@@ -52,10 +52,24 @@ class ActiveSupport::TestCase
     refute signup.errors[key].present?, message || "unexpected error on '#{key}'"
   end
 
+  def with_timezone(timezone, &block)
+    current_timezone = Time.zone
+    Time.zone = timezone || current_timezone
+    result = yield
+    Time.zone = current_timezone
+    result
+  end
+
   def stub_braintree_customer_create(signup, response, payment_method_nonce = nil)
     Braintree::Customer.expects(:create)
                        .with(expected_attributes_to_braintree_customer_create(signup, payment_method_nonce))
                        .returns(response)
+  end
+
+  def stub_braintree_transaction_sale(signup, response, payment_method_nonce = nil)
+    Braintree::Transaction.expects(:sale)
+                          .with(expected_attributes_to_braintree_transaction_sale(signup, payment_method_nonce))
+                          .returns(response)
   end
 
   def expected_attributes_to_braintree_customer_create(signup, payment_method_nonce = nil)
@@ -64,6 +78,22 @@ class ActiveSupport::TestCase
       payment_method_nonce: payment_method_nonce || signup.payment_method_nonce,
       email: signup.email,
       website: "http://instagram.com/#{signup.instagram_username}"
+    }
+  end
+
+  def expected_attributes_to_braintree_transaction_sale(signup, payment_method_nonce = nil)
+    {
+      amount: (signup.plan || Plan.default).amount,
+      payment_method_nonce: payment_method_nonce || signup.payment_method_nonce,
+      options: {
+        submit_for_settlement: true,
+        store_in_vault_on_success: true
+      },
+      customer: {
+        id: signup.instagram_id,
+        email: signup.email,
+        website: "https://instagram.com/#{signup.instagram_username}"
+      }
     }
   end
 

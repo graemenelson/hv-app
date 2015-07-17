@@ -40,8 +40,8 @@ class SignupsController < ApplicationController
       signup_attrs = params.require(:signup)
                            .permit(:payment_method_nonce,
                                    :payment_method_type)
-
-      if @signup.update_attributes(signup_attrs)
+      plan = load_default_plan
+      if @signup.update_attributes(signup_attrs.merge(plan: plan))
         service = CustomerFromSignup.call(@signup)
         if customer = service.customer
           # TODO: need to create subscription default, $18 for 6 months
@@ -50,32 +50,10 @@ class SignupsController < ApplicationController
           track_signup! :completed
           redirect_to build_dashboard_path
         else
-          @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.status.titleize}")
+          @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.titleize}")
           unable_to_update_subscription!
         end
 
-        # transaction = Braintree::Transaction.sale( {
-        #   amount: '18.00',
-        #   payment_method_nonce: @signup.payment_method_nonce,
-        #   options: {
-        #     submit_for_settlement: true,
-        #     store_in_vault_on_success: true
-        #   },
-        #   customer: {
-        #     id: @signup.instagram_id,
-        #     email: @signup.email,
-        #     website: "https://instagram.com/#{@signup.instagram_username}"
-        #   }
-        # })
-        # response = Braintree::Customer.create({
-        #     id: @signup.instagram_id,
-        #     payment_method_nonce: @signup.payment_method_nonce,
-        #     email: @signup.email,
-        #     website: "http://instagram.com/#{@signup.instagram_username}"
-        #   })
-        #
-        # puts response.inspect
-        # try and capture Braintree::Transaction
       else
         unable_to_update_subscription!
       end

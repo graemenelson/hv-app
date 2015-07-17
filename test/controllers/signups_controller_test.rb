@@ -90,25 +90,33 @@ class SignupsControllerTest < ActionController::TestCase
 
     response = Hashie::Mash.new({
         success?: true,
-        customer: {}
+        transaction: {
+          id: 'transaction-id'
+        }
       })
-    stub_braintree_customer_create(signup, response, 'valid-credit-card')
+    stub_braintree_transaction_sale(signup, response, 'valid-credit-card')
 
     assert_difference customer_session_count do
       assert_difference customer_count do
-        assert_difference signup_completed_event_count do
-          put :update_subscription, id: signup,
-                                    signup: {
-                                      payment_method_nonce: 'valid-credit-card',
-                                      payment_method_type: 'CreditCard' }
+        assert_difference subscriptions_count do
+          assert_difference signup_completed_event_count do
+            put :update_subscription, id: signup,
+                                      signup: {
+                                        payment_method_nonce: 'valid-credit-card',
+                                        payment_method_type: 'CreditCard' }
+          end
         end
       end
     end
 
     signup.reload
     assert signup.completed?
+    assert_equal Plan.default, signup.plan
     assert_equal 'CreditCard', signup.payment_method_type
     assert_equal 'valid-credit-card', signup.payment_method_nonce
+
+    subscription = Customer.first.subscriptions.first
+    assert_equal 'transaction-id', subscription.transaction_id
     assert_redirected_to build_dashboard_path
   end
   test '#update_subscription with an invalid payment_method_nonce' do
@@ -116,11 +124,12 @@ class SignupsControllerTest < ActionController::TestCase
     token  = stub_braintree_client_token
 
     response = Hashie::Mash.new({
-        credit_card_verification: {
+        success?: false,
+        transaction: {
           status: 'processor_declined'
         }
       })
-    stub_braintree_customer_create(signup, response, 'invalid-credit-card')
+    stub_braintree_transaction_sale(signup, response, 'invalid-credit-card')
 
     assert_difference signup_update_subscription_with_errors_event_count do
       put :update_subscription, id: signup,
@@ -185,6 +194,10 @@ class SignupsControllerTest < ActionController::TestCase
 
   def customer_count
     -> { Customer.count }
+  end
+
+  def subscriptions_count
+    -> { Subscription.count }
   end
 
   def create_signup_in_information_state
