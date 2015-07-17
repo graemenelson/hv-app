@@ -34,7 +34,6 @@ class CustomerFromSignup
   end
 
   def call
-    @error = "this is just a placeholder"
     response = Braintree::Customer.create({
         id: instagram_id,
         payment_method_nonce: payment_method_nonce,
@@ -43,11 +42,11 @@ class CustomerFromSignup
       })
 
     if response.success?
-      @customer = Customer.create!(attributes_for_consumer_from_signup.merge(signup: signup))
+      self.customer = Customer.create!(attributes_for_consumer_from_signup.merge(signup: signup))
       signup.completed!
     else
       if response.credit_card_verification
-        @error = response.credit_card_verification
+        self.error = response.credit_card_verification
       else
         errors = []
         response.errors.each do |error|
@@ -64,6 +63,9 @@ class CustomerFromSignup
   end
 
   private
+
+  attr_writer :error,
+              :customer
 
   def attributes_for_consumer_from_signup
     signup_attributes   = Hashie::Mash.new(signup.attributes)
