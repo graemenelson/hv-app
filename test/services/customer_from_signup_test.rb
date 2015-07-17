@@ -5,6 +5,7 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     signup = create_signup_with_plan
     response = Hashie::Mash.new({
         success?: false,
+        errors: [],
         transaction: {
           status: 'processor_declined'
         }

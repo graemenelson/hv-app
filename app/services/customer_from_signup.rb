@@ -44,7 +44,7 @@ class CustomerFromSignup
       create_customer_subscription(response.transaction)
       signup.completed!
     else
-      response.errors.present? ?
+      has_response_errors?(response) ?
         record_response_errors(response.errors) :
         record_transaction_error(response.transaction)
     end
@@ -62,6 +62,10 @@ class CustomerFromSignup
     customer_attributes = signup_attributes.slice(*SIGNUP_ATTRIBUTES_TO_MOVE_TO_CUSTOMER)
     customer_attributes.merge!(signup_began_at: signup.created_at, braintree_id: instagram_id)
     strong_parameters(customer_attributes).permit(*PERMITTED_CUSTOMER_ATTRIBUTES)
+  end
+
+  def has_response_errors?(response)
+    return false unless response.errors && response.errors.size > 0
   end
 
   def create_braintree_transaction
@@ -88,7 +92,7 @@ class CustomerFromSignup
   # a transaction.
   def record_response_errors(errors)
     messages = []
-    response.errors.each do |error|
+    errors.each do |error|
       messages << "#{error.code} - #{error.message}"
     end
 
