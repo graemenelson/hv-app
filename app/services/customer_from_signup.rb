@@ -109,25 +109,13 @@ class CustomerFromSignup
   end
 
   def subscription_starts_at_from_plan
-    with_customer_timezone do
-      1.month.ago.beginning_of_month
-    end
+    1.month.ago.beginning_of_month
   end
 
   def subscription_ends_at_from_plan
-    with_customer_timezone do
-      # TODO: improve readability of the ends_at calculation for subsscription
-      #       -- you go one month back and take the plan duration minus 1
-      (1.month.ago + (plan.duration-1).months).end_of_month
-    end
-  end
-
-  def with_customer_timezone(&block)
-    current_timezone = Time.zone
-    Time.zone = customer.timezone || current_timezone
-    result = yield
-    Time.zone = current_timezone
-    result
+    # TODO: improve readability of the ends_at calculation for subsscription
+    #       -- you go one month back and take the plan duration minus 1
+    (1.month.ago + (plan.duration-1).months).end_of_month
   end
 
 end

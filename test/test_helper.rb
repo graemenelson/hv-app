@@ -52,14 +52,6 @@ class ActiveSupport::TestCase
     refute signup.errors[key].present?, message || "unexpected error on '#{key}'"
   end
 
-  def with_timezone(timezone, &block)
-    current_timezone = Time.zone
-    Time.zone = timezone || current_timezone
-    result = yield
-    Time.zone = current_timezone
-    result
-  end
-
   def stub_braintree_customer_create(signup, response, payment_method_nonce = nil)
     Braintree::Customer.expects(:create)
                        .with(expected_attributes_to_braintree_customer_create(signup, payment_method_nonce))
