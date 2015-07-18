@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150718184200) do
+ActiveRecord::Schema.define(version: 20150718205039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,27 @@ ActiveRecord::Schema.define(version: 20150718184200) do
   add_index "events", ["customer_id"], name: "index_events_on_customer_id", using: :btree
   add_index "events", ["parameters"], name: "index_events_on_parameters", using: :gin
   add_index "events", ["visitor_id"], name: "index_events_on_visitor_id", using: :btree
+
+  create_table "instagram_session_logs", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.uuid     "instagram_session_id"
+    t.integer  "response_time"
+    t.string   "endpoint"
+    t.text     "params"
+    t.integer  "status"
+    t.datetime "created_at"
+  end
+
+  add_index "instagram_session_logs", ["instagram_session_id"], name: "index_instagram_session_logs_on_instagram_session_id", using: :btree
+
+  create_table "instagram_sessions", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.text     "access_token"
+    t.text     "access_token_key"
+    t.text     "access_token_iv"
+    t.datetime "finished_at"
+    t.datetime "created_at"
+    t.string   "error"
+    t.text     "backtrace"
+  end
 
   create_table "plans", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "name"
@@ -122,6 +143,7 @@ ActiveRecord::Schema.define(version: 20150718184200) do
 
   add_foreign_key "events", "customers"
   add_foreign_key "events", "visitors"
+  add_foreign_key "instagram_session_logs", "instagram_sessions"
   add_foreign_key "subscriptions", "customers"
   add_foreign_key "subscriptions", "plans"
   add_foreign_key "visitors", "customers"

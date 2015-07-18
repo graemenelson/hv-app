@@ -48,6 +48,10 @@ gem 'gon'
 # Utilities
 gem 'hashie', '~> 3.4.2'
 
+# Security
+gem 'bcrypt', '~> 3.1.7'
+gem 'strongbox'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

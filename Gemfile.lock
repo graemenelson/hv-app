@@ -41,6 +41,7 @@ GEM
     autoprefixer-rails (5.2.1)
       execjs
       json
+    bcrypt (3.1.10)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bootstrap-sass (3.3.5.1)
@@ -163,6 +164,8 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    strongbox (0.7.2)
+      activerecord
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (1.4.1)
@@ -186,6 +189,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   bootstrap-sass (~> 3.3.5.1)
   braintree
   byebug
@@ -204,6 +208,7 @@ DEPENDENCIES
   sdoc (~> 0.4.0)
   simple_form
   spring
+  strongbox
   turbolinks
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
