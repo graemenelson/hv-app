@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150718210528) do
+ActiveRecord::Schema.define(version: 20150718211312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,7 +101,6 @@ ActiveRecord::Schema.define(version: 20150718210528) do
     t.text     "instagram_id"
     t.text     "instagram_username"
     t.text     "instagram_profile_picture"
-    t.text     "email"
     t.text     "timezone"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
@@ -112,6 +111,9 @@ ActiveRecord::Schema.define(version: 20150718210528) do
     t.text     "access_token"
     t.text     "access_token_key"
     t.text     "access_token_iv"
+    t.text     "email"
+    t.text     "email_key"
+    t.text     "email_iv"
   end
 
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree

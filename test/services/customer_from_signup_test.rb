@@ -36,7 +36,8 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
                  customer.access_token
     assert_equal signup.instagram_id, customer.instagram_id
     assert_equal signup.instagram_username, customer.instagram_username
-    assert_equal signup.email, customer.email
+    assert_equal signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
+                 customer.email
     assert_equal signup.created_at, customer.signup_began_at
     assert_equal signup.instagram_id, customer.braintree_id
     assert_equal signup.instagram_profile_picture, customer.instagram_profile_picture

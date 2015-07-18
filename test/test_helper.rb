@@ -83,7 +83,7 @@ class ActiveSupport::TestCase
     {
       id: signup.instagram_id,
       payment_method_nonce: payment_method_nonce || signup.payment_method_nonce,
-      email: signup.email,
+      email: signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
       website: "http://instagram.com/#{signup.instagram_username}"
     }
   end
@@ -98,7 +98,7 @@ class ActiveSupport::TestCase
       },
       customer: {
         id: signup.instagram_id,
-        email: signup.email,
+        email: signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
         website: "https://instagram.com/#{signup.instagram_username}"
       }
     }

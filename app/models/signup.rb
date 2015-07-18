@@ -1,10 +1,9 @@
 class Signup < ActiveRecord::Base
 
-  # TODO: encrypt email
-
   encrypt_with_public_key :access_token,
-      key_pair: Rails.root.join('config','certs','keypair.pem'),
-      base64: true
+                          :email,
+                          key_pair: Rails.root.join('config','certs','keypair.pem'),
+                          base64: true
 
   attr_accessor :allow_blank_email,
                 :allow_blank_payment_method_nonce
