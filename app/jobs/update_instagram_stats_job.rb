@@ -2,10 +2,11 @@ class UpdateInstagramStatsJob < ActiveJob::Base
   queue_as :instagram
 
   include InstagramMixin
+  include StrongboxMixin
 
   def perform(*args)
     customer = args.first
-    response = instagram(customer.access_token).user
+    response = instagram(decrypt(customer.access_token)).user
     customer.update_attributes(customer_attributes_from_response(response))
   end
 

@@ -3,7 +3,7 @@ require 'test_helper'
 class UpdateInstagramStatsJobTest < ActiveJob::TestCase
   test '#perform with valid instagram user response' do
     customer  = create_customer
-    instagram = stub_instagram(access_token: customer.access_token)
+    instagram = stub_instagram(access_token: decrypt(customer.access_token))
     response  = valid_instagram_response
     instagram.expects(:user).returns(response)
 
