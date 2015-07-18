@@ -37,7 +37,7 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     assert_equal signup.instagram_id, customer.instagram_id
     assert_equal signup.instagram_username, customer.instagram_username
     assert_equal decrypt(signup.email),
-                 customer.email
+                 decrypt(customer.email)
     assert_equal signup.created_at, customer.signup_began_at
     assert_equal signup.instagram_id, customer.braintree_id
     assert_equal signup.instagram_profile_picture, customer.instagram_profile_picture
