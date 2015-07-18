@@ -4,7 +4,7 @@ class CreateSubscriptions < ActiveRecord::Migration
       t.references :customer, index: true, foreign_key: true, type: :uuid
       t.references :plan, index: true, foreign_key: true, type: :uuid
       t.text :transaction_id
-      t.datetime :ends_at
+      t.date :end_date
 
       t.timestamps null: false
     end

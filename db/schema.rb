@@ -97,10 +97,10 @@ ActiveRecord::Schema.define(version: 20150718021239) do
     t.uuid     "customer_id"
     t.uuid     "plan_id"
     t.text     "transaction_id"
-    t.datetime "ends_at"
+    t.date     "end_date"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-    t.datetime "starts_at"
+    t.date     "start_date"
   end
 
   add_index "subscriptions", ["customer_id"], name: "index_subscriptions_on_customer_id", using: :btree

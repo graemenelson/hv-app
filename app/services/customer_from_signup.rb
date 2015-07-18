@@ -47,7 +47,7 @@ class CustomerFromSignup
       CreateSubscription.call( customer: customer,
                                transaction_id: response.transaction.id,
                                plan: plan,
-                               starts_at: 1.month.ago)
+                               start_date: 1.month.ago)
       signup.completed!
     else
       has_response_errors?(response) ?

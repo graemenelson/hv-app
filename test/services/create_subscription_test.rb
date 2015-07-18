@@ -15,21 +15,15 @@ class CreateSubscriptionTest < ActiveSupport::TestCase
     service        = CreateSubscription.call( customer: customer,
                                              plan: plan,
                                              transaction_id: transaction_id,
-                                             starts_at: 1.month.ago )
+                                             start_date: 1.month.ago )
 
     assert service.valid?
-
-
     subscription = service.subscription
     assert_equal customer, subscription.customer
     assert_equal plan, subscription.plan
     assert_equal transaction_id, subscription.transaction_id
-
-    with_timezone(customer.timezone) do
-      assert_equal 1.month.ago.beginning_of_month, subscription.starts_at
-      assert_equal 4.months.from_now.end_of_month, subscription.ends_at
-    end
-
+    assert_equal 1.month.ago.beginning_of_month.to_date, subscription.start_date
+    assert_equal 4.months.from_now.end_of_month.to_date, subscription.end_date
   end
 
 
