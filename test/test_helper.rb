@@ -4,6 +4,14 @@ require 'rails/test_help'
 require 'mocha/mini_test'
 require 'hashie'
 
+class ActionController::TestCase
+  def signin_customer(customer)
+    customer_session = CustomerSession.create(customer: customer)
+    session[:customer_session_id] = customer_session.id
+    customer_session
+  end
+end
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   # fixtures :all

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150718021239) do
+ActiveRecord::Schema.define(version: 20150718184200) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20150718021239) do
     t.integer  "instagram_followed_by_count"
     t.integer  "instagram_media_count"
     t.uuid     "signup_id"
+    t.datetime "profile_created_at"
   end
 
   add_index "customers", ["signup_id"], name: "index_customers_on_signup_id", using: :btree

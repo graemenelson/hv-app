@@ -45,6 +45,7 @@ class SignupsController < ApplicationController
         if customer = create_customer_from_signup
           update_session_with_customer(customer)
           track_signup! :completed
+          BuildCustomerProfileJob.perform_later customer
           redirect_to build_dashboard_path
         else
           unable_to_update_subscription!

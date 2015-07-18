@@ -96,6 +96,8 @@ class SignupsControllerTest < ActionController::TestCase
       })
     stub_braintree_transaction_sale(signup, response, 'valid-credit-card')
 
+    BuildCustomerProfileJob.expects(:perform_later)
+
     assert_difference customer_session_count do
       assert_difference customer_count do
         assert_difference subscriptions_count do
@@ -115,7 +117,10 @@ class SignupsControllerTest < ActionController::TestCase
     assert_equal 'CreditCard', signup.payment_method_type
     assert_equal 'valid-credit-card', signup.payment_method_nonce
 
-    subscription = Customer.first.subscriptions.first
+    customer = Customer.first
+    assert_nil customer.profile_created_at, 'should not have a completed profile'
+
+    subscription = customer.subscriptions.first
     assert_equal 'transaction-id', subscription.transaction_id
     assert_redirected_to build_dashboard_path
   end
