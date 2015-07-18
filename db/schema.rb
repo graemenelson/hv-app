@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150718211312) do
+ActiveRecord::Schema.define(version: 20150718213007) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 20150718211312) do
   end
 
   create_table "customers", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
-    t.text     "access_token"
     t.text     "braintree_id"
     t.text     "instagram_id"
     t.text     "instagram_profile_picture"
@@ -44,6 +43,9 @@ ActiveRecord::Schema.define(version: 20150718211312) do
     t.integer  "instagram_media_count"
     t.uuid     "signup_id"
     t.datetime "profile_created_at"
+    t.text     "access_token"
+    t.text     "access_token_key"
+    t.text     "access_token_iv"
   end
 
   add_index "customers", ["signup_id"], name: "index_customers_on_signup_id", using: :btree

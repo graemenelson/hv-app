@@ -36,7 +36,7 @@ class SignupsControllerTest < ActionController::TestCase
     assert_redirected_to subscription_signup_path(signup)
 
     signup.reload
-    assert_equal 'jill@smith.com', signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD'])
+    assert_equal 'jill@smith.com', decrypt(signup.email)
     assert_equal 'America/Los_Angeles', signup.timezone
   end
   test '#update_information with invalid email' do

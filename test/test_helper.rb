@@ -24,6 +24,12 @@ class ActiveSupport::TestCase
     Gon.clear
   end
 
+  def decrypt(value)
+    value.is_a?( Strongbox::Lock ) ?
+      value.decrypt(ENV['STRONGBOX_PASSWORD']) :
+      value
+  end
+
   # Add more helper methods to be used by all tests here...
   def create_signup(attrs = {})
     Signup.create!(attrs.reverse_merge({
@@ -83,7 +89,7 @@ class ActiveSupport::TestCase
     {
       id: signup.instagram_id,
       payment_method_nonce: payment_method_nonce || signup.payment_method_nonce,
-      email: signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
+      email: decrypt(signup.email),
       website: "http://instagram.com/#{signup.instagram_username}"
     }
   end
@@ -98,7 +104,7 @@ class ActiveSupport::TestCase
       },
       customer: {
         id: signup.instagram_id,
-        email: signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
+        email: decrypt(signup.email),
         website: "https://instagram.com/#{signup.instagram_username}"
       }
     }

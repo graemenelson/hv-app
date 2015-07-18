@@ -4,6 +4,7 @@
 class CustomerFromSignup
 
   include StrongParametersMixin
+  include StrongboxMixin
 
   attr_reader :signup,
               :customer,
@@ -11,7 +12,6 @@ class CustomerFromSignup
 
   delegate :instagram_id,
            :instagram_username,
-           :email,
            :payment_method_nonce,
            :plan,
            to: :signup
@@ -68,8 +68,8 @@ class CustomerFromSignup
     customer_attributes = signup_attributes.slice(*SIGNUP_ATTRIBUTES_TO_MOVE_TO_CUSTOMER)
     customer_attributes.merge!(signup_began_at: signup.created_at,
                                braintree_id: instagram_id,
-                               access_token: signup.access_token.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
-                               email:        signup.email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']))
+                               access_token: access_token,
+                               email:        email)
     strong_parameters(customer_attributes).permit(*PERMITTED_CUSTOMER_ATTRIBUTES)
   end
 
@@ -87,7 +87,7 @@ class CustomerFromSignup
       },
       customer: {
         id: instagram_id,
-        email: email.decrypt(ENV['ACCESS_TOKEN_PASSWORD']),
+        email: email,
         website: "https://instagram.com/#{instagram_username}"
       }
     })
@@ -106,6 +106,14 @@ class CustomerFromSignup
     end
 
     fail "Braintree Error [#{messages.join(', ')}] for Signup (#{signup.id})"
+  end
+
+  def email
+    decrypt(signup.email)
+  end
+
+  def access_token
+    decrypt(signup.access_token)
   end
 
 end

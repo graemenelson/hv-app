@@ -18,13 +18,13 @@ class SignupTest < ActiveSupport::TestCase
     signup = create_signup(email: nil, payment_method_nonce: 'my-nonce')
     token  = 'new-access-token'
     assert signup.update_attributes( access_token: token, allow_blank_email: true )
-    assert_equal token, signup.access_token.decrypt(ENV['ACCESS_TOKEN_PASSWORD'])
+    assert_equal token, decrypt(signup.access_token)
   end
   test 'update validations with allow_blank_payment_method_nonce and no payment_method_nonce' do
     signup = create_signup(email: 'jill@smith.com')
     token  = 'new-access-token'
     assert signup.update_attributes( access_token: token, allow_blank_payment_method_nonce: true )
-    assert_equal token, signup.access_token.decrypt(ENV['ACCESS_TOKEN_PASSWORD'])
+    assert_equal token, decrypt(signup.access_token)
   end
 
   test 'completed! when not already completed' do

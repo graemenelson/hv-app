@@ -35,7 +35,7 @@ class InstagramControllerTest < ActionController::TestCase
     assert_redirected_to information_signup_path(signup)
 
     signup.reload
-    assert_equal response.access_token, signup.access_token.decrypt(ENV['ACCESS_TOKEN_PASSWORD']), 'must update access token with new token'
+    assert_equal response.access_token, decrypt(signup.access_token), 'must update access token with new token'
     assert_equal response.user.username, signup.instagram_username, 'must update username with current username'
   end
 

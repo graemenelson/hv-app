@@ -1,6 +1,8 @@
 require 'benchmark'
 class InstagramSession < ActiveRecord::Base
 
+  include StrongboxMixin
+
   encrypt_with_public_key :access_token,
       key_pair: Rails.root.join('config','certs','keypair.pem'),
       base64: true
@@ -66,7 +68,7 @@ class InstagramSession < ActiveRecord::Base
   end
 
   def decrypted_access_token
-    @decrypted_access_token ||= access_token.decrypt ENV['ACCESS_TOKEN_PASSWORD']
+    @decrypted_access_token ||= decrypt(access_token.decrypt)
   end
 
   def build_log(endpoint, params)
