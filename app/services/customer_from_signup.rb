@@ -23,13 +23,13 @@ class CustomerFromSignup
     :instagram_id,
     :instagram_username,
     :instagram_profile_picture,
-    :access_token,
     :email,
     :timezone
   ]
   PERMITTED_CUSTOMER_ATTRIBUTES = SIGNUP_ATTRIBUTES_TO_MOVE_TO_CUSTOMER + [
     :signup_began_at,
-    :braintree_id
+    :braintree_id,
+    :access_token
   ]
 
   def self.call(signup)
@@ -66,7 +66,9 @@ class CustomerFromSignup
   def attributes_for_consumer_from_signup
     signup_attributes   = Hashie::Mash.new(signup.attributes)
     customer_attributes = signup_attributes.slice(*SIGNUP_ATTRIBUTES_TO_MOVE_TO_CUSTOMER)
-    customer_attributes.merge!(signup_began_at: signup.created_at, braintree_id: instagram_id)
+    customer_attributes.merge!(signup_began_at: signup.created_at,
+                               braintree_id: instagram_id,
+                               access_token: signup.access_token.decrypt(ENV['ACCESS_TOKEN_PASSWORD']))
     strong_parameters(customer_attributes).permit(*PERMITTED_CUSTOMER_ATTRIBUTES)
   end
 
