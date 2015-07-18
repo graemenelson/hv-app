@@ -42,15 +42,11 @@ class SignupsController < ApplicationController
                                    :payment_method_type)
       plan = load_default_plan
       if @signup.update_attributes(signup_attrs.merge(plan: plan))
-        service = CustomerFromSignup.call(@signup)
-        if customer = service.customer
-          # TODO: need to create subscription default, $18 for 6 months
-          #       -- keep in mind we might need to handle different plans later on
+        if customer = create_customer_from_signup
           update_session_with_customer(customer)
           track_signup! :completed
           redirect_to build_dashboard_path
         else
-          @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.titleize}")
           unable_to_update_subscription!
         end
 
@@ -63,6 +59,14 @@ class SignupsController < ApplicationController
   end
 
   private
+
+  def create_customer_from_signup
+    service = CustomerFromSignup.call(@signup)
+    unless customer = service.customer
+      @signup.errors.add(:base, "We ran into an issue with your payment: #{service.error.titleize}")
+    end
+    customer
+  end
 
   def load_active_signup
     query   = {id: params[:id], completed_at: nil}

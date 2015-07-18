@@ -45,10 +45,6 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
     subscription = customer.subscriptions.first
     assert_equal 'transaction-id', subscription.transaction_id
     assert_equal signup.plan, subscription.plan
-    expected_starts_at = 1.month.ago.beginning_of_month
-    assert_equal expected_starts_at.to_s, subscription.starts_at.to_s
-    expected_ends_at   = 4.months.from_now.end_of_month
-    assert_equal expected_ends_at.to_s, subscription.ends_at.to_s
 
     assert signup.completed?, "signup should now be completed"
   end

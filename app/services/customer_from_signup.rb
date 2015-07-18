@@ -1,3 +1,6 @@
+# Creates a new customer from a Braintree Transaction sale.
+# If the customer was created, then we also create a new
+# subscription for the customer based on the plan.
 class CustomerFromSignup
 
   include StrongParametersMixin
@@ -41,7 +44,10 @@ class CustomerFromSignup
     response = create_braintree_transaction
     if response.success?
       self.customer = Customer.create!(attributes_for_consumer_from_signup.merge(signup: signup))
-      create_customer_subscription(response.transaction)
+      CreateSubscription.call( customer: customer,
+                               transaction_id: response.transaction.id,
+                               plan: plan,
+                               starts_at: 1.month.ago)
       signup.completed!
     else
       has_response_errors?(response) ?
@@ -97,25 +103,6 @@ class CustomerFromSignup
     end
 
     fail "Braintree Error [#{messages.join(', ')}] for Signup (#{signup.id})"
-  end
-
-  def create_customer_subscription(transaction)
-    customer.subscriptions.create({
-        transaction_id: transaction.id,
-        plan: plan,
-        starts_at: subscription_starts_at_from_plan,
-        ends_at: subscription_ends_at_from_plan
-      })
-  end
-
-  def subscription_starts_at_from_plan
-    1.month.ago.beginning_of_month
-  end
-
-  def subscription_ends_at_from_plan
-    # TODO: improve readability of the ends_at calculation for subsscription
-    #       -- you go one month back and take the plan duration minus 1
-    (1.month.ago + (plan.duration-1).months).end_of_month
   end
 
 end
