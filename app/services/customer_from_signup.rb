@@ -103,19 +103,31 @@ class CustomerFromSignup
     customer.subscriptions.create({
         transaction_id: transaction.id,
         plan: plan,
+        starts_at: subscription_starts_at_from_plan,
         ends_at: subscription_ends_at_from_plan
       })
   end
 
+  def subscription_starts_at_from_plan
+    with_customer_timezone do
+      1.month.ago.beginning_of_month
+    end
+  end
+
   def subscription_ends_at_from_plan
+    with_customer_timezone do
+      # TODO: improve readability of the ends_at calculation for subsscription
+      #       -- you go one month back and take the plan duration minus 1
+      (1.month.ago + (plan.duration-1).months).end_of_month
+    end
+  end
+
+  def with_customer_timezone(&block)
     current_timezone = Time.zone
     Time.zone = customer.timezone || current_timezone
-
-    end_month = plan.duration.month.from_now
-    ends_at   = end_month.beginning_of_month
-
+    result = yield
     Time.zone = current_timezone
-    ends_at
+    result
   end
 
 end
