@@ -42,8 +42,10 @@ class InstagramSession < ActiveRecord::Base
         end
       rescue Exception => e
         close!(e)
+        raise e if Rails.env.test?
         []
       end
+      close!
     end
   end
 
@@ -54,11 +56,16 @@ class InstagramSession < ActiveRecord::Base
   end
 
   def close!(exception = nil)
-    return unless exception
-    update_attributes(
-      error:        exception.message,
-      backtrace:    exception.backtrace
-    )
+    finished_at = Time.now
+    attrs = { finished_at: finished_at,
+              milliseconds_to_finish: (finished_at - created_at)*1000 }
+    if exception
+      attrs.merge!(
+        error:        exception.message,
+        backtrace:    exception.backtrace
+      )
+    end
+    update_attributes(attrs)
   end
 
   private
@@ -68,7 +75,7 @@ class InstagramSession < ActiveRecord::Base
   end
 
   def decrypted_access_token
-    @decrypted_access_token ||= decrypt(access_token.decrypt)
+    @decrypted_access_token ||= decrypt(access_token)
   end
 
   def build_log(endpoint, params)

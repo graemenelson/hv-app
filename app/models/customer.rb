@@ -6,5 +6,6 @@ class Customer < ActiveRecord::Base
                           base64: true
 
   has_many :subscriptions
+  has_many :reports
   belongs_to :signup
 end

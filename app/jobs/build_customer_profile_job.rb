@@ -4,9 +4,10 @@ class BuildCustomerProfileJob < ActiveJob::Base
   def perform(*args)
     customer = args.first
     UpdateInstagramStatsJob.new.perform(customer)
-    # TODO: iterate through customer feed one month at a time
-    #       -- keep track of months with images or not
-    #       -- remove all ending months with no images
+    CreateReportsJob.new.perform(customer)
+    # TODO: kick off first subscription based report for last month
+    #       -- if last month does not have photos, find the previous month with
+    #          photos
 
     customer.update_attribute(:profile_created_at, Time.zone.now)
   end
