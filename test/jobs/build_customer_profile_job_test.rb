@@ -7,6 +7,7 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
     stub_create_reports_job(customer)
     BuildCustomerProfileJob.new.perform(customer)
     assert customer.profile_created_at.present?
+    assert customer.first_posted_at.present?
   end
 
   def stub_update_instagram_stats_job(customer)
@@ -18,7 +19,7 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
 
   def stub_create_reports_job(customer)
     job = mock('create-reports-job')
-    job.expects(:perform).with(customer)
+    job.expects(:perform).with(customer).returns(Hashie::Mash.new(first_post_created_at: 1.day.ago))
 
     CreateReportsJob.expects(:new).returns(job)
   end

@@ -11,47 +11,108 @@ class CreateReportsJob < ActiveJob::Base
   attr_reader :customer,
               :instagram_session
 
-  attr_accessor :last_post_created_at
-
   delegate :timezone,
            :instagram_id,
            to: :customer
+
+  delegate :first_post_created_at,
+           to: :posts_meta
+
+  class MonthMeta
+    attr_reader :year,
+                :month,
+                :count,
+                :max_timestamp,
+                :min_timestamp
+
+    def initialize(year, month)
+      @year  = year
+      @month = month
+      @count = 0
+    end
+
+    def record(post)
+      @count += 1
+
+      @max_timestamp = post.created_time unless max_timestamp
+      @min_timestamp = post.created_time
+    end
+  end
+
+  class PostsMeta
+
+    attr_reader :first_post_created_at
+
+    delegate :each,
+             to: :flatten_meta
+
+    def initialize
+      @first_post_created_at = nil
+      @meta                  = {}
+    end
+
+    def record(post)
+      posted_at = Time.zone.at(post.created_time.to_i)
+      build_months_for_year(posted_at.year)
+      record_post(post)
+      @first_post_created_at = posted_at
+    end
+
+
+    private
+
+    def build_months_for_year(year)
+      unless @meta[year].present?
+        @meta[year] = 1.upto(12).collect {|month| MonthMeta.new(year, month) }
+      end
+    end
+
+    def record_post(post)
+      posted_at = Time.zone.at(post.created_time.to_i)
+      @meta[posted_at.year][posted_at.month-1].record(post)
+    end
+
+    def flatten_meta
+      years = @meta.keys.sort.reverse
+      years.collect do |year|
+        @meta[year]
+      end.flatten
+    end
+  end
 
   def perform(*args)
     @customer             = args.first
     # TODO: store customer on instagram session (not required for all sessions)
     # TODO: record time in milliseconds it took InstagramSession to complete (easier to query slow responses)
     @instagram_session    = InstagramSession.create(access_token: decrypt(@customer.access_token))
-    @last_post_created_at = nil
-    @posts_meta           = {}
+    @posts_meta           = PostsMeta.new
 
     set_timezone
     collect_post_data_from_instagram
     create_reports_from_posts_meta
     reset_timezone
-    puts @posts_meta.inspect
+
+    self
   end
 
   private
 
+  attr_reader :posts_meta
+
   def collect_post_data_from_instagram
     instagram_session.user_media(instagram_id, max_timestamp: end_of_last_month_at_epoch).each do |post|
-      posted_at = Time.zone.at(post.created_time.to_i)
-      @last_post_created_at = posted_at
-      @posts_meta[posted_at.year] ||= Array.new(12, 0)
-      @posts_meta[posted_at.year][posted_at.month - 1]+=1
+      posts_meta.record(post)
     end
   end
 
   def create_reports_from_posts_meta
-    @posts_meta.each do |year, counts_by_month|
-      counts_by_month.each_with_index do |count, index|
-        month = index + 1
-        RecordReportCount.call(customer: customer,
-                               year: year,
-                               month: month,
-                               count: count)
-      end
+    posts_meta.each do |month_meta|
+      RecordReportMeta.call(customer: customer,
+                             year: month_meta.year,
+                             month: month_meta.month,
+                             count: month_meta.count,
+                             min_timestamp: month_meta.min_timestamp,
+                             max_timestamp: month_meta.max_timestamp)
     end
   end
 

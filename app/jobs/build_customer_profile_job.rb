@@ -3,12 +3,13 @@ class BuildCustomerProfileJob < ActiveJob::Base
 
   def perform(*args)
     customer = args.first
-    UpdateInstagramStatsJob.new.perform(customer)
-    CreateReportsJob.new.perform(customer)
+    stats   = UpdateInstagramStatsJob.new.perform(customer)
+    reports = CreateReportsJob.new.perform(customer)
     # TODO: kick off first subscription based report for last month
     #       -- if last month does not have photos, find the previous month with
     #          photos
 
-    customer.update_attribute(:profile_created_at, Time.zone.now)
+    customer.update_attributes(first_posted_at: reports.first_post_created_at,
+                               profile_created_at: Time.zone.now)
   end
 end

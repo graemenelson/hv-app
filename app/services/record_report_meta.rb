@@ -3,7 +3,7 @@
 #
 # It will not allow recording for reports
 # that are in the current or future months.
-class RecordReportCount
+class RecordReportMeta
 
   extend ActiveModel::Naming
   include ActiveModel::Validations
@@ -12,6 +12,8 @@ class RecordReportCount
               :month,
               :year,
               :count,
+              :min_timestamp,
+              :max_timestamp,
               # Out
               :date,
               :report
@@ -27,17 +29,21 @@ class RecordReportCount
     @month    = attrs[:month]
     @year     = attrs[:year]
     @count    = attrs[:count]
+    @min_timestamp = attrs[:min_timestamp]
+    @max_timestamp = attrs[:max_timestamp]
 
     @date     = Date.parse("#{month}/#{year}")
   end
 
   def call
     if valid?
+      updateable_attrs = { count: count,
+                           min_timestamp: min_timestamp,
+                           max_timestamp: max_timestamp }
       if @report = customer.reports.find_by(month: date)
-        @report.update_attribute(:count, count)
+        @report.update_attributes(updateable_attrs)
       else
-        @report = customer.reports.create! month: date,
-                                           count: count
+        @report = customer.reports.create!(updateable_attrs.merge(month: date))
       end
     end
 
