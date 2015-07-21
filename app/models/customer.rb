@@ -8,4 +8,8 @@ class Customer < ActiveRecord::Base
   has_many :subscriptions
   has_many :reports
   belongs_to :signup
+
+  def most_recent_report_with_counts
+    reports.where("count > 0").first
+  end
 end
