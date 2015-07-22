@@ -6,6 +6,7 @@
 class CreateReportsJob < ActiveJob::Base
   queue_as :default
 
+  include InstagramMixin
   include StrongboxMixin
 
   attr_reader :customer,
@@ -84,7 +85,7 @@ class CreateReportsJob < ActiveJob::Base
     @customer             = args.first
     # TODO: store customer on instagram session (not required for all sessions)
     # TODO: record time in milliseconds it took InstagramSession to complete (easier to query slow responses)
-    @instagram_session    = InstagramSession.create(access_token: decrypt(@customer.access_token))
+    @instagram_session    = instagram(decrypt(@customer.access_token))
     @posts_meta           = PostsMeta.new
 
     set_timezone

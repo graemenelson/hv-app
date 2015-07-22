@@ -41,24 +41,32 @@ class InstagramSession < ActiveRecord::Base
           end
         end
       rescue Exception => e
-        close!(e)
+        close!(:user_media, e)
         raise e if Rails.env.test?
         []
       end
-      close!
+      close!(:user_media)
     end
   end
 
+  def user(id = nil)
+    log = build_log(:user, [id])
+
+    response = lookup_user(id, log)
+  end
+
   def comments(id)
+    # NOTE: not sure we want to close the instagram session
     log = build_log(:comments, [id])
 
     response = lookup_comments(id, log)
   end
 
-  def close!(exception = nil)
+  def close!(name, exception = nil)
     finished_at = Time.now
     attrs = { finished_at: finished_at,
-              milliseconds_to_finish: (finished_at - created_at)*1000 }
+              milliseconds_to_finish: (finished_at - created_at)*1000,
+              name: name }
     if exception
       attrs.merge!(
         error:        exception.message,
@@ -99,6 +107,24 @@ class InstagramSession < ActiveRecord::Base
       results = client.media_comments(id)
     end
     log.response_time = time * 1000 # in milliseconds
+    log.close!
+    results
+  end
+
+  def lookup_user(id, log)
+    response = benchmark(log) do
+      client.user(id)
+    end
+    close!(:user)
+    response
+  end
+
+  def benchmark(log, &block)
+    results = nil
+    time = Benchmark.realtime do
+      results = yield
+    end
+    log.response_time = time * 1000
     log.close!
     results
   end
