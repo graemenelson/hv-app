@@ -42,6 +42,10 @@ Rails.application.configure do
     Bullet.enable = true
     Bullet.add_footer
     Bullet.rails_logger = true
+
+    Bullet.add_whitelist type: :n_plus_one_query,
+                         class_name: "Customer",
+                         association: :reports
   end
 
 end

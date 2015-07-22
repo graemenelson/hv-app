@@ -32,6 +32,7 @@ module HaaaveApp
       #{config.root}/app/services
       #{config.root}/app/validators
       #{config.root}/app/jobs
+      #{config.root}/app/presenters
        )
 
     config.generators do |g|

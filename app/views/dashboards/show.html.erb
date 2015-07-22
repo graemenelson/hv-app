@@ -1,1 +1,21 @@
-<p> need to build the dashboard </p>
+<% @dashboard.years.each do |year| %>
+  <div class='dashboard-year'>
+    <h3><%= year.label %></h3>
+    <table class="table">
+      <thead>
+        <th>Month</th>
+        <th>Photo Count</th>
+        <th>&nbsp;</th>
+      </thead>
+      <tbody>
+        <% year.months.each do |month| %>
+          <tr>
+            <td><%= month.label %></td>
+            <td><%= month.media_count %></td>
+            <td></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
