@@ -3,10 +3,7 @@
 #
 # It will not allow recording for reports
 # that are in the current or future months.
-class RecordReportMeta
-
-  extend ActiveModel::Naming
-  include ActiveModel::Validations
+class RecordReportMeta < BaseService
 
   attr_reader :customer,
               :month,
@@ -19,10 +16,6 @@ class RecordReportMeta
               :report
 
   validate :date_is_in_past?
-
-  def self.call(attrs={})
-    self.new(attrs).call
-  end
 
   def initialize(attrs={})
     @customer = attrs[:customer]
@@ -40,19 +33,15 @@ class RecordReportMeta
     @date     = Date.parse("#{month}/#{year}")
   end
 
-  def call
-    if valid?
-      updateable_attrs = { count: count,
-                           min_timestamp: min_timestamp,
-                           max_timestamp: max_timestamp }
-      if @report = customer.reports.find_by(month: date)
-        @report.update_attributes(updateable_attrs)
-      else
-        @report = customer.reports.create!(updateable_attrs.merge(month: date))
-      end
+  def perform
+    updateable_attrs = { count: count,
+                         min_timestamp: min_timestamp,
+                         max_timestamp: max_timestamp }
+    if @report = customer.reports.find_by(month: date)
+      @report.update_attributes(updateable_attrs)
+    else
+      @report = customer.reports.create!(updateable_attrs.merge(month: date))
     end
-
-    self
   end
 
   private

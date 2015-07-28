@@ -1,7 +1,7 @@
 # Creates a new customer from a Braintree Transaction sale.
 # If the customer was created, then we also create a new
 # subscription for the customer based on the plan.
-class CustomerFromSignup
+class CustomerFromSignup < BaseService
 
   include StrongParametersMixin
   include StrongboxMixin
@@ -32,15 +32,11 @@ class CustomerFromSignup
     :email
   ]
 
-  def self.call(signup)
-    self.new(signup).call
-  end
-
   def initialize(signup)
     @signup = signup
   end
 
-  def call
+  def perform
     response = create_braintree_transaction
     if response.success?
       self.customer = Customer.create!(attributes_for_consumer_from_signup.merge(signup: signup))
@@ -54,8 +50,6 @@ class CustomerFromSignup
         record_response_errors(response.errors) :
         record_transaction_error(response.transaction)
     end
-
-    self
   end
 
   private

@@ -1,7 +1,4 @@
-class CreateSubscription
-
-  extend ActiveModel::Naming
-  include ActiveModel::Validations
+class CreateSubscription < BaseService
 
   attr_reader :customer,
               :transaction_id,
@@ -13,9 +10,6 @@ class CreateSubscription
             :plan,
             :transaction_id, presence: true
 
-  def self.call(attrs = {})
-    self.new(attrs).call
-  end
 
   def initialize(attrs = {})
     @customer = attrs[:customer]
@@ -24,14 +18,11 @@ class CreateSubscription
     @start_date = attrs[:start_date] || Date.today
   end
 
-  def call
-    if valid?
-      @subscription = customer.subscriptions.create!( plan: plan,
-                                                      transaction_id: transaction_id,
-                                                      start_date: subscription_start_date,
-                                                      end_date: subscription_end_date )
-    end
-    self
+  def perform
+    @subscription = customer.subscriptions.create!( plan: plan,
+                                                    transaction_id: transaction_id,
+                                                    start_date: subscription_start_date,
+                                                    end_date: subscription_end_date )
   end
 
   private
