@@ -18,6 +18,8 @@ class CreateReportJob < ActiveJob::Base
            to: :customer
 
   def perform(*args)
+    # TODO: need to transiation report into a building stage, and then move
+    # to download stage once report is done.
     @report             = args.first
     @instagram_session  = instagram(decrypt(customer.access_token))
 
