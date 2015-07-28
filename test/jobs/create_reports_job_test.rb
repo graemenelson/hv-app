@@ -31,12 +31,6 @@ class CreateReportsJobTest < ActiveJob::TestCase
 
   private
 
-  def stub_instagram_session_user_media(job, results = [])
-    session = mock('instagram-session')
-    job.expects(:instagram_session).returns(session)
-    session.expects(:user_media).returns(results)
-  end
-
   def user_media
     [
       Hashie::Mash.new( created_time: Time.parse("2015-06-03").to_i.to_s ),
@@ -56,8 +50,10 @@ class CreateReportsJobTest < ActiveJob::TestCase
                  customer_report_for_month(customer, month).min_timestamp
   end
 
+  # we add +1 to the max timestamp, otherwise the user media lookup will
+  # not match when max timestamp is a complete match. TODO: make sure this is the case
   def assert_report_max_timestamp(customer, month, post)
-    assert_equal post.created_time.to_i,
+    assert_equal post.created_time.to_i + 1,
                  customer_report_for_month(customer, month).max_timestamp
   end
 

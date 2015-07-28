@@ -110,4 +110,11 @@ class ActiveSupport::TestCase
     }
   end
 
+  def stub_instagram_session_user_media(job, results = [])
+    session = mock('instagram-session')
+    job.expects(:instagram_session).at_least_once.returns(session)
+    session.expects(:user_media).returns(results)
+    session.expects(:close!)
+  end
+
 end

@@ -8,6 +8,7 @@ class CreateReportsJob < ActiveJob::Base
 
   include InstagramMixin
   include StrongboxMixin
+  include TimezoneMixin
 
   attr_reader :customer,
               :instagram_session
@@ -104,6 +105,7 @@ class CreateReportsJob < ActiveJob::Base
     instagram_session.user_media(instagram_id, max_timestamp: end_of_last_month_at_epoch).each do |post|
       posts_meta.record(post)
     end
+    instagram_session.close!
   end
 
   def create_reports_from_posts_meta
@@ -115,15 +117,6 @@ class CreateReportsJob < ActiveJob::Base
                              min_timestamp: month_meta.min_timestamp,
                              max_timestamp: month_meta.max_timestamp)
     end
-  end
-
-  def set_timezone
-    @original_timezone = Time.zone
-    Time.zone = timezone
-  end
-
-  def reset_timezone
-    Time.zone = @original_timezone
   end
 
   def end_of_last_month_at_epoch

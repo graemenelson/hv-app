@@ -11,12 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150721191058) do
+ActiveRecord::Schema.define(version: 20150728023357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
   enable_extension "hstore"
+
+  create_table "comments", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.uuid     "post_id"
+    t.text     "text"
+    t.string   "username"
+    t.text     "profile_picture"
+    t.datetime "created_at"
+  end
+
+  add_index "comments", ["post_id"], name: "index_comments_on_post_id", using: :btree
 
   create_table "customer_sessions", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.uuid     "customer_id"
@@ -103,6 +113,21 @@ ActiveRecord::Schema.define(version: 20150721191058) do
 
   add_index "plans", ["slug"], name: "index_plans_on_slug", unique: true, using: :btree
 
+  create_table "posts", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.uuid     "report_id"
+    t.text     "media_id"
+    t.integer  "likes_count"
+    t.integer  "comments_count"
+    t.text     "caption"
+    t.string   "media_type"
+    t.text     "media_url"
+    t.text     "url"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "posts", ["report_id"], name: "index_posts_on_report_id", using: :btree
+
   create_table "reports", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.uuid     "customer_id"
     t.date     "month"
@@ -163,9 +188,11 @@ ActiveRecord::Schema.define(version: 20150721191058) do
   add_index "visitors", ["customer_id"], name: "index_visitors_on_customer_id", using: :btree
   add_index "visitors", ["parameters"], name: "index_visitors_on_parameters", using: :gin
 
+  add_foreign_key "comments", "posts"
   add_foreign_key "events", "customers"
   add_foreign_key "events", "visitors"
   add_foreign_key "instagram_session_logs", "instagram_sessions"
+  add_foreign_key "posts", "reports"
   add_foreign_key "reports", "customers"
   add_foreign_key "subscriptions", "customers"
   add_foreign_key "subscriptions", "plans"

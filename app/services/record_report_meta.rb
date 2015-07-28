@@ -30,7 +30,12 @@ class RecordReportMeta
     @year     = attrs[:year]
     @count    = attrs[:count]
     @min_timestamp = attrs[:min_timestamp]
-    @max_timestamp = attrs[:max_timestamp]
+
+    # we add +1 to the max timestamp, otherwise the user media lookup will
+    # not match when max timestamp is a complete match. TODO: make sure this is the case
+    @max_timestamp = attrs[:max_timestamp].present? ?
+                     attrs[:max_timestamp].to_i + 1 :
+                     nil
 
     @date     = Date.parse("#{month}/#{year}")
   end

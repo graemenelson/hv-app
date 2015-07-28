@@ -5,6 +5,10 @@ class BuildCustomerProfileJob < ActiveJob::Base
     customer = args.first
     stats   = UpdateInstagramStatsJob.new.perform(customer)
     reports = CreateReportsJob.new.perform(customer)
+
+    service  = MostRecentReportWithEntries.call(customer: customer)
+    CreateReportJob.new.perform(service.report)
+
     # TODO: kick off first subscription based report for last month
     #       -- if last month does not have photos, find the previous month with
     #          photos
