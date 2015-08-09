@@ -35,6 +35,10 @@ module HaaaveApp
       #{config.root}/app/presenters
        )
 
+    # prefix ActiveJob queue name with rails environment
+    config.active_job.queue_name_prefix = Rails.env
+    config.active_job.queue_adapter = :shoryuken
+
     config.generators do |g|
       g.test_framework  :test_unit, fixture: false
       g.stylesheets     false

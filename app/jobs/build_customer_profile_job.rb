@@ -1,5 +1,5 @@
 class BuildCustomerProfileJob < ActiveJob::Base
-  queue_as :default
+  queue_as :high_priority
 
   def perform(*args)
     customer = args.first
@@ -7,7 +7,9 @@ class BuildCustomerProfileJob < ActiveJob::Base
     reports = CreateReportsJob.new.perform(customer)
 
     service  = MostRecentReportWithEntries.call(customer: customer)
-    CreateReportJob.new.perform(service.report)
+
+    # TODO: this should be kick off in the background
+    CreateReportJob.perform_later(service.report)
 
     # TODO: kick off first subscription based report for last month
     #       -- if last month does not have photos, find the previous month with

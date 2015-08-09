@@ -27,10 +27,7 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
   end
 
   def stub_create_report_job(report)
-    job = mock('create-report-job')
-    job.expects(:perform).with(report)
-
-    CreateReportJob.expects(:new).returns(job)
+    CreateReportJob.expects(:perform_later).with(report)
   end
 
 end

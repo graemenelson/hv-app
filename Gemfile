@@ -34,12 +34,16 @@ gem 'puma'
 # Services
 gem 'instagram'
 gem 'braintree'
+gem 'aws-sdk-core'
 
 # Bootstrap
 gem 'bootstrap-sass', '~> 3.3.5.1'
 
 # Persistence
 gem 'pg'
+
+# Jobs
+gem 'shoryuken'
 
 # Views
 gem 'simple_form'

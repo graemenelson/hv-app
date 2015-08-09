@@ -27,6 +27,7 @@ class CreateReportJob < ActiveJob::Base
     process
     reset_timezone
 
+    # TODO: should kick off a generate pdf job for report
     self
   end
 
