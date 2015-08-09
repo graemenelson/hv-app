@@ -51,6 +51,7 @@ gem 'gon'
 
 # Utilities
 gem 'hashie', '~> 3.4.2'
+gem 'foreman'
 
 # Security
 gem 'bcrypt', '~> 3.1.7'
