@@ -18,6 +18,8 @@ class CreateReportJobTest < ActiveJob::TestCase
         job.perform(report)
       end
     end
+
+    refute_nil report.reload.build_posts_finished_at
   end
 
   private

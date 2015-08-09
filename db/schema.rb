@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150809175758) do
+ActiveRecord::Schema.define(version: 20150809182750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,12 +132,15 @@ ActiveRecord::Schema.define(version: 20150809175758) do
     t.uuid     "customer_id"
     t.date     "month"
     t.integer  "count"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
     t.integer  "min_timestamp"
     t.integer  "max_timestamp"
     t.string   "purchaseable_type"
     t.uuid     "purchaseable_id"
+    t.datetime "purchased_at"
+    t.datetime "build_posts_finished_at"
+    t.datetime "build_pdf_finished_at"
   end
 
   add_index "reports", ["customer_id"], name: "index_reports_on_customer_id", using: :btree

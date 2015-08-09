@@ -8,7 +8,8 @@ class BuildCustomerProfileJob < ActiveJob::Base
 
     service  = MostRecentReportWithEntries.call(customer: customer)
     if report = service.report
-      report.update_attribute(:purchaseable, customer.current_subscription)
+      report.update_attributes(purchaseable: customer.current_subscription,
+                               purchased_at: Time.zone.now)
       CreateReportJob.perform_later(service.report)
     end
 

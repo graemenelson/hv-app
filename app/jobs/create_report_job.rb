@@ -25,6 +25,7 @@ class CreateReportJob < ActiveJob::Base
 
     set_timezone
     process
+    record_build_posts_finished_at
     reset_timezone
 
     # TODO: should kick off a generate pdf job for report
@@ -32,6 +33,10 @@ class CreateReportJob < ActiveJob::Base
   end
 
   private
+
+  def record_build_posts_finished_at
+    report.update_attribute(:build_posts_finished_at, Time.zone.now)
+  end
 
   def process
     instagram_session.user_media(instagram_id,
