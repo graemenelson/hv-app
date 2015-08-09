@@ -12,4 +12,11 @@ class Customer < ActiveRecord::Base
   def most_recent_report_with_counts
     reports.where("count > 0").first
   end
+
+  def current_subscription
+    subscriptions.where(["start_date <= :now and :now < end_date", { now: Time.zone.now.to_date }])
+                 .order(created_at: :desc)
+                 .first
+  end
+
 end

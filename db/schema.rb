@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728023357) do
+ActiveRecord::Schema.define(version: 20150809175758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,10 +132,12 @@ ActiveRecord::Schema.define(version: 20150728023357) do
     t.uuid     "customer_id"
     t.date     "month"
     t.integer  "count"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.integer  "min_timestamp"
     t.integer  "max_timestamp"
+    t.string   "purchaseable_type"
+    t.uuid     "purchaseable_id"
   end
 
   add_index "reports", ["customer_id"], name: "index_reports_on_customer_id", using: :btree
@@ -162,7 +164,7 @@ ActiveRecord::Schema.define(version: 20150728023357) do
   add_index "signups", ["instagram_id"], name: "index_signups_on_instagram_id", using: :btree
   add_index "signups", ["plan_id"], name: "index_signups_on_plan_id", using: :btree
 
-  create_table "subscriptions", force: :cascade do |t|
+  create_table "subscriptions", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.uuid     "customer_id"
     t.uuid     "plan_id"
     t.text     "transaction_id"

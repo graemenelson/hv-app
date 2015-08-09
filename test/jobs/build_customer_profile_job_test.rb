@@ -10,6 +10,8 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
     BuildCustomerProfileJob.new.perform(customer)
     assert customer.profile_created_at.present?
     assert customer.first_posted_at.present?
+    assert_equal customer.current_subscription,
+                 report.purchaseable
   end
 
   def stub_update_instagram_stats_job(customer)

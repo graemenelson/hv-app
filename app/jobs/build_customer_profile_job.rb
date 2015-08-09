@@ -7,9 +7,10 @@ class BuildCustomerProfileJob < ActiveJob::Base
     reports = CreateReportsJob.new.perform(customer)
 
     service  = MostRecentReportWithEntries.call(customer: customer)
-
-    # TODO: this should be kick off in the background
-    CreateReportJob.perform_later(service.report)
+    if report = service.report
+      report.update_attribute(:purchaseable, customer.current_subscription)
+      CreateReportJob.perform_later(service.report)
+    end
 
     # TODO: kick off first subscription based report for last month
     #       -- if last month does not have photos, find the previous month with

@@ -18,4 +18,23 @@ class CustomerTest < ActiveSupport::TestCase
 
     assert_equal r2, customer.most_recent_report_with_counts
   end
+  test '#current_subscription with a current subscription' do
+    customer = create_customer
+    subscription = customer.subscriptions.create( start_date: 30.days.ago, end_date: 1.day.from_now )
+    assert_equal subscription, customer.current_subscription
+  end
+  test '#current_subscription with old subscription' do
+    customer = create_customer
+    subscription = customer.subscriptions.create( start_date: 30.days.ago, end_date: 1.day.ago )
+    assert_nil customer.current_subscription
+  end
+  test '#current_subscription with future subscription' do
+    customer = create_customer
+    subscription = customer.subscriptions.create( start_date: 1.day.from_now, end_date: 20.days.from_now)
+    assert_nil customer.current_subscription
+  end
+  test '#current_subscription with no subscriptions' do
+    customer = create_customer
+    assert_nil customer.current_subscription
+  end
 end
