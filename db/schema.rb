@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150809182750) do
+ActiveRecord::Schema.define(version: 20150809221506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,6 +101,16 @@ ActiveRecord::Schema.define(version: 20150809182750) do
     t.text     "backtrace"
     t.integer  "milliseconds_to_finish"
   end
+
+  create_table "payments", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.string   "transaction_id"
+    t.uuid     "customer_id"
+    t.integer  "amount_cents"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "payments", ["customer_id"], name: "index_payments_on_customer_id", using: :btree
 
   create_table "plans", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.text     "name"
@@ -197,6 +207,7 @@ ActiveRecord::Schema.define(version: 20150809182750) do
   add_foreign_key "events", "customers"
   add_foreign_key "events", "visitors"
   add_foreign_key "instagram_session_logs", "instagram_sessions"
+  add_foreign_key "payments", "customers"
   add_foreign_key "posts", "reports"
   add_foreign_key "reports", "customers"
   add_foreign_key "subscriptions", "customers"

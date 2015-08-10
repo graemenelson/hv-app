@@ -7,6 +7,7 @@ class Customer < ActiveRecord::Base
 
   has_many :subscriptions
   has_many :reports
+  has_many :payments
   belongs_to :signup
 
   def most_recent_report_with_counts

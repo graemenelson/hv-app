@@ -59,6 +59,10 @@ class ActiveSupport::TestCase
       }))
   end
 
+  def stub_create_report_job(report)
+    CreateReportJob.expects(:perform_later).with(report)
+  end  
+
   def assert_error(signup, key, message = nil)
     assert signup.errors[key].present?, message || "expected error on '#{key}'"
   end
@@ -79,10 +83,21 @@ class ActiveSupport::TestCase
                        .returns(response)
   end
 
-  def stub_braintree_transaction_sale(signup, response, payment_method_nonce = nil)
+  def stub_brainree_customer_find(braintree_id, response)
+    Braintree::Customer.expects(:find)
+                       .with(braintree_id)
+                       .returns(response)
+  end
+
+  def stub_braintree_transaction_sale(attrs, response)
     Braintree::Transaction.expects(:sale)
-                          .with(expected_attributes_to_braintree_transaction_sale(signup, payment_method_nonce))
+                          .with(attrs)
                           .returns(response)
+  end
+
+  def stub_braintree_transaction_sale_for_signup(signup, response, payment_method_nonce = nil)
+    stub_braintree_transaction_sale(expected_attributes_to_braintree_transaction_sale(signup, payment_method_nonce),
+                                    response)
   end
 
   def expected_attributes_to_braintree_customer_create(signup, payment_method_nonce = nil)

@@ -26,4 +26,9 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :reports, only: [], module: 'reports' do
+    resource :order, only: [:show, :update]
+    resource :archive, only: [:update]
+  end
+
 end

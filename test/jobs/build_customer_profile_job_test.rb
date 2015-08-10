@@ -31,8 +31,4 @@ class BuildCustomerProfileJobTest < ActiveJob::TestCase
     CreateReportsJob.expects(:new).returns(job)
   end
 
-  def stub_create_report_job(report)
-    CreateReportJob.expects(:perform_later).with(report)
-  end
-
 end

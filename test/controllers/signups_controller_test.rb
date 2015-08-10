@@ -94,7 +94,7 @@ class SignupsControllerTest < ActionController::TestCase
           id: 'transaction-id'
         }
       })
-    stub_braintree_transaction_sale(signup, response, 'valid-credit-card')
+    stub_braintree_transaction_sale_for_signup(signup, response, 'valid-credit-card')
 
     BuildCustomerProfileJob.expects(:perform_later)
 
@@ -134,7 +134,7 @@ class SignupsControllerTest < ActionController::TestCase
           status: 'processor_declined'
         }
       })
-    stub_braintree_transaction_sale(signup, response, 'invalid-credit-card')
+    stub_braintree_transaction_sale_for_signup(signup, response, 'invalid-credit-card')
 
     assert_difference signup_update_subscription_with_errors_event_count do
       put :update_subscription, id: signup,

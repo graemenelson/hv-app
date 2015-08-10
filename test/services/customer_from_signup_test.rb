@@ -11,7 +11,7 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
         }
       })
 
-    stub_braintree_transaction_sale(signup, response)
+    stub_braintree_transaction_sale_for_signup(signup, response)
 
     service = CustomerFromSignup.call(signup)
     refute service.customer.present?
@@ -28,7 +28,7 @@ class CustomerFromSignupTest < ActiveSupport::TestCase
         }
       })
 
-    stub_braintree_transaction_sale(signup, response)
+    stub_braintree_transaction_sale_for_signup(signup, response)
 
     customer = CustomerFromSignup.call(signup).customer
     assert customer
