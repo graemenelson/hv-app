@@ -61,7 +61,7 @@ class ActiveSupport::TestCase
 
   def stub_create_report_job(report)
     CreateReportJob.expects(:perform_later).with(report)
-  end  
+  end
 
   def assert_error(signup, key, message = nil)
     assert signup.errors[key].present?, message || "expected error on '#{key}'"
@@ -125,9 +125,9 @@ class ActiveSupport::TestCase
     }
   end
 
-  def stub_instagram_session_user_media(job, results = [])
+  def stub_instagram_session_user_media(clazz, results = [])
     session = mock('instagram-session')
-    job.expects(:instagram_session).at_least_once.returns(session)
+    clazz.expects(:instagram_session).at_least_once.returns(session)
     session.expects(:user_media).returns(results)
     session.expects(:close!)
   end
