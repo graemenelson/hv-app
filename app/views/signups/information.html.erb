@@ -1,20 +1,25 @@
-<h2>You're Almost There</h2>
-<p>Enter your email address and billing information to complete the signup using your instagram account:</p>
-<div class="media">
-  <div class="media-left">
-    <img class="media-object" src="<%= @signup.instagram_profile_picture %>" height="75" width="75" />
-  </div>
-  <div class="media-body">
-    <h4 class="media-heading">@<%= @signup.instagram_username %></h4>
-  </div>
-</div>
-<hr />
-<%= simple_form_for @signup, url: update_information_signup_path(@signup), method: :put do |f| %>
-  <%= f.error :base, class: 'alert alert-danger' %>
-  <fieldset>
-  <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
-  </fieldset>
+<div class="row">
+  <div class="col-xs-3"></div>
+  <div class="col-xs-6">
+    <div class="media signup--instagram-badge">
+      <div class="media-left">
+          <img class="media-object img-circle" src="<%= @signup.instagram_profile_picture %>" height="125" width="125" />
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading text-center">@<%= @signup.instagram_username %></h4>
+      </div>
+      <hr />
+      <%= simple_form_for @signup, url: update_information_signup_path(@signup), method: :put, class: "form" do |f| %>
+        <%= f.error :base, class: 'alert alert-danger' %>
+        <fieldset>
+        <%= f.input :email, autofocus: true, label: "Your Email Address", as: :email %>
+        </fieldset>
 
-  <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
-  <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary' %>
-<% end %>
+        <%= f.input :timezone, as: :hidden, input_html: {class: 'timezone'} %>
+        <%= f.button :submit, "Make the magic happen", class: 'btn btn-primary center-block' %>
+      <% end %>
+
+    </div>
+  </div>
+  <div class="col-xs-3"></div>
+</div>

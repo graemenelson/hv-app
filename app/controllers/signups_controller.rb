@@ -1,4 +1,7 @@
 class SignupsController < ApplicationController
+
+  layout "signup"
+
   def information
     load_active_signup
     track_signup! :information

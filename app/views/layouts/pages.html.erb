@@ -14,7 +14,6 @@
 </head>
 <body>
   <div class="container">
-    <p>THIS IS APPLICATION LAYOUT</p>
     <% flash.each do |key, value| %>
       <%= content_tag :div, value, class: "flash #{key}" %>
     <% end %>

@@ -4,7 +4,9 @@ class DashboardsController < ApplicationController
   before_filter :ensure_profile_created!, only: :show
 
   def build
-    redirect_to dashboard_path if profile_created?
+    redirect_to dashboard_path and return if profile_created?
+
+    render :build, layout: "signup"
   end
 
   def show

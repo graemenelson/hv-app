@@ -1,5 +1,7 @@
 class PagesController < ApplicationController
 
+  layout "pages"
+  
   def landing
     # TODO: don't create visitors and track bots
     #       -- look at admin view that shows recent USER_AGENT and allow them to be added to the bot list
