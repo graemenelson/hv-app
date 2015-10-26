@@ -1,21 +1,29 @@
+<div class="row">
+  <p> account stuff / notifications go here </p>
+</div>
+
 <% @dashboard.years.each do |year| %>
-  <div class='dashboard-year'>
-    <h3><%= year.label %></h3>
-    <table class="table">
-      <thead>
-        <th>Month</th>
-        <th>Photo Count</th>
-        <th>&nbsp;</th>
-      </thead>
-      <tbody>
-        <% year.months.each do |month| %>
-          <tr>
-            <td><%= month.label %></td>
-            <td><%= month.media_count %></td>
-            <td><%= render partial: "dashboards/month/#{month.template}", locals: {month: month} %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<div class="row">
+  <div class="col-xs-12">
+    <div class='dashboard-year'>
+      <h3><%= year.label %></h3>
+      <table class="table">
+        <thead>
+          <th>Month</th>
+          <th>Photo Count</th>
+          <th>&nbsp;</th>
+        </thead>
+        <tbody>
+          <% year.months.each do |month| %>
+            <tr>
+              <td><%= month.label %></td>
+              <td><%= month.media_count %></td>
+              <td><%= render partial: "dashboards/month/#{month.template}", locals: {month: month} %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
+</div>
 <% end %>

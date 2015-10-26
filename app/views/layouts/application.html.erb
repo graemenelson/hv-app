@@ -14,7 +14,14 @@
 </head>
 <body>
   <div class="container">
-    <p>THIS IS APPLICATION LAYOUT</p>
+    <div class="header clearfix">
+      <nav>
+        <ul class="nav nav-pills pull-right">
+          <li role="presentation" class="active"><a href="#">Profile</a></li>
+        </ul>
+      </nav>
+      <h3 class="text-muted">Haaave <small>all your memories in a neat little digital booklet</small></h3>
+    </div>
     <% flash.each do |key, value| %>
       <%= content_tag :div, value, class: "flash #{key}" %>
     <% end %>
